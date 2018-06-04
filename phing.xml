@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="indexer-common" default="codeception" basedir=".">
+    <php expression="include_once('vendor/autoload.php')" level="verbose"/>
+
+    <target name="codeception">
+        <exec command="php -f vendor\codeception\codeception\codecept -- run unit -vvv" passthru="true" checkreturn="true" escape="false"/>
+    </target>
+
+    <target name="infection">
+        <exec command="php -f infection.php -- -s --test-framework=phpunit --test-framework-options=&quot;--teamcity&quot; -vvv" passthru="true" checkreturn="true" escape="false"/>
+    </target>
+
+    <target name="infection covered">
+        <exec command="php -f infection.php -- -s --test-framework=phpunit --test-framework-options=&quot;--teamcity&quot; -vvv --only-covered" passthru="true" checkreturn="true" escape="false"/>
+    </target>
+
+</project>

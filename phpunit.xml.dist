@@ -1,0 +1,24 @@
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.0/phpunit.xsd"
+        bootstrap="tests/phpunit.bootstrap.php"
+        convertNoticesToExceptions="false"
+        convertWarningsToExceptions="false"
+        verbose="true">
+<testsuites>
+    <testsuite name="My Test Suite">
+        <file>tests/unit/SourceTest.php</file>
+        <file>tests/unit/RegulationTest.php</file>
+        <file>tests/unit/ExceptionTest.php</file>
+        <file>tests/unit/IndexTest.php</file>
+        <file>tests/unit/SchedulerTest.php</file>
+        <file>tests/unit/ViewTest.php</file>
+        <file>tests/unit/BusTest.php</file>
+        <file>tests/unit/EventTest.php</file>
+        <file>tests/unit/TransactionTest.php</file>
+        <file>tests/unit/IntegrationTest.php</file>
+        <file>tests/unit/UniversalEntityTest.php</file>
+        <file>tests/unit/UniversalNormalizerTest.php</file>
+    </testsuite>
+</testsuites>
+</phpunit>

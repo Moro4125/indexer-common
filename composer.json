@@ -1,0 +1,52 @@
+{
+  "name": "moro/indexer-common",
+  "description": "A library that provides common classes for entities indexer",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andrey Morozkin",
+      "email": "andrey.dmitrievich@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Moro\\Indexer\\Common\\": "sources/",
+      "Moro\\Indexer\\Test\\": "tests/sources/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "psr/log": "1.0.0",
+    "psr/container": "1.0.0"
+  },
+  "require-dev": {
+    "phing/phing": "~2.0",
+    "moro/container7": "~1.4",
+    "codeception/codeception": "~2.0",
+    "codeception/verify": "~1.0",
+    "codeception/specify": "~1.0",
+    "codeception/assert-throws": "~1.0",
+    "infection/infection": "~0.5",
+    "symfony/dependency-injection": "~v4.0",
+    "symfony/config": "~v4.0",
+    "symfony/http-kernel": "~v4.0",
+    "doctrine/dbal": "~v2.6"
+  },
+  "archive": {
+    "exclude": [
+      "/*.zip",
+      "/.idea",
+      "/vendor",
+      "/tests",
+      "/codeception.json",
+      "/composer.lock",
+      "/composer.phar",
+      "/infection.json.dist",
+      "/infection.php",
+      "/phpunit.php",
+      "/phing.xml",
+      "/phpunit.xml.dist"
+    ]
+  }
+}

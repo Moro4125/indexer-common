@@ -1,0 +1,25 @@
+{
+  "source": {
+    "directories": [
+      "sources"
+    ],
+    "excludes": [
+      "MonolithFacade",
+      "BackendFacade",
+      "ClientFacade",
+      "DoctrineDBALAdapter",
+      "DoctrineDBALStorage",
+      "HttpApiAdapter",
+      "Strategy",
+      "Integration"
+    ]
+  },
+  "timeout": 10,
+  "logs": {
+    "text": "tests\/_data\/infection-log.txt"
+  },
+  "phpUnit": {
+    "configDir": ".",
+    "customPath": "vendor\/phpunit\/phpunit\/phpunit"
+  }
+}

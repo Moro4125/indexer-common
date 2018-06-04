@@ -1,0 +1,56 @@
+{
+  "types": {
+    "article": {
+      "source-adapter": {
+        "table": "articles",
+        "columns": {
+          "id": "id",
+          "timestamp": "updated_at"
+        }
+      },
+      "normalizers": [
+        {
+          "conditions": [
+            "[version='1.0']"
+          ],
+          "rules": [
+            ["head/title", "name"]
+          ]
+        }
+      ],
+      "instructions": [
+        {
+          "conditions": [
+            "[categories[*='news']]"
+          ],
+          "variables": {
+            "tags": "meta/tags/*",
+            "active_from": "meta/active_from"
+          },
+          "indexes": {
+            "news/{tags}": "{active_from}"
+          },
+          "kinds": [
+            "json"
+          ],
+          "scheduler": [
+            "{active_from}"
+          ]
+        }
+      ],
+      "kinds": {
+        "rss": {
+          "template": "rss.xml.twig",
+          "parameters": {
+            "title": "announce/title",
+            "url": "meta/url",
+            "description": "announce/lead"
+          }
+        }
+      }
+    },
+    "author": [
+      "..."
+    ]
+  }
+}
