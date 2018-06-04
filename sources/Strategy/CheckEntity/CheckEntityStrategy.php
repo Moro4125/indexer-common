@@ -92,7 +92,6 @@ class CheckEntityStrategy implements CheckEntityInterface
 
                     if (empty($list[$id]) || (new DateTime($list[$id]))->getTimestamp() < $updated) {
                         $entitiesLimit--;
-                        unset($list[$id]);
 
                         $entry = $this->_factory->newEntry();
                         $entry->setAction('update');
@@ -102,6 +101,8 @@ class CheckEntityStrategy implements CheckEntityInterface
                         $timestamp = floor(time() / $this->_receiveLimit) * $this->_receiveLimit;
                         $this->_scheduler->defer($timestamp, $entry);
                     }
+
+                    unset($list[$id]);
 
                     if (!$entitiesLimit) {
                         return;
