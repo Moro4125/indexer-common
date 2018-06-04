@@ -3,12 +3,10 @@
 namespace Moro\Indexer\Common\Strategy\CheckEntity;
 
 use DateTime;
-use Moro\Indexer\Common\Event\Event\SchedulerDeriveEvent;
 use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManager;
 use Moro\Indexer\Common\Scheduler\FactoryInterface as EntryFactory;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;
-use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\ManagerInterface as SourceManager;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;
@@ -135,17 +133,7 @@ class CheckEntityStrategy implements CheckEntityInterface
             $entry->setType($type);
             $entry->setId($id);
 
-            try {
-                $event = new SchedulerDeriveEvent($entry, time());
-                $this->_events->trigger($event)
-                    ->fire();
-            } catch (NotFoundException $exception) {
-                $entry->setAction('remove');
-
-                $event = new SchedulerDeriveEvent($entry, time());
-                $this->_events->trigger($event)
-                    ->fire();
-            }
+            $this->_scheduler->defer(time(), $entry);
         }
     }
 }
