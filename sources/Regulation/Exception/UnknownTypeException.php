@@ -2,9 +2,9 @@
 
 namespace Moro\Indexer\Common\Regulation\Exception;
 
-use Moro\Indexer\Common\Regulation\ExceptionInterface;
 use Moro\Indexer\Common\Exception\UnknownTypeInterface;
 use Moro\Indexer\Common\Exception\UnknownTypeTrait;
+use Moro\Indexer\Common\Regulation\ExceptionInterface;
 
 /**
  * Class UnknownTypeException

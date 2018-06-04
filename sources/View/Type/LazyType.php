@@ -2,8 +2,6 @@
 
 namespace Moro\Indexer\Common\View\Type;
 
-use Moro\Indexer\Common\Source\EntityInterface;
-use Moro\Indexer\Common\View\KindInterface;
 use Moro\Indexer\Common\View\Type\Decorator\AbstractDecorator;
 use Moro\Indexer\Common\View\TypeInterface;
 use Psr\Container\ContainerInterface;

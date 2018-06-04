@@ -26,6 +26,7 @@ class SchedulerManager implements ManagerInterface
     public function setFactory(FactoryInterface $factory): ManagerInterface
     {
         $this->_factory = $factory;
+
         return $this;
     }
 
@@ -36,6 +37,7 @@ class SchedulerManager implements ManagerInterface
     public function setStorage(StorageInterface $storage): ManagerInterface
     {
         $this->_storage = $storage;
+
         return $this;
     }
 

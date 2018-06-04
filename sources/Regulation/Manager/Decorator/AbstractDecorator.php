@@ -22,7 +22,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function addType(TypeInterface $type): ManagerInterface
     {
-        $this->getDecoratedInstance()->addType($type);
+        $this->getDecoratedInstance()
+            ->addType($type);
 
         return $this;
     }
@@ -32,7 +33,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function getTypes(): array
     {
-        return $this->getDecoratedInstance()->getTypes();
+        return $this->getDecoratedInstance()
+            ->getTypes();
     }
 
     /**
@@ -42,7 +44,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function handle(string $type, EntityInterface $entity): ResultInterface
     {
-        return $this->getDecoratedInstance()->handle($type, $entity);
+        return $this->getDecoratedInstance()
+            ->handle($type, $entity);
     }
 
     /**

@@ -17,6 +17,7 @@ trait UnknownTypeTrait
     public function setType(string $type)
     {
         $this->_type = $type;
+
         return $this;
     }
 

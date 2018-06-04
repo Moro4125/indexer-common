@@ -22,6 +22,7 @@ class IndexManager implements ManagerInterface
     public function setStorage(StorageInterface $storage): ManagerInterface
     {
         $this->_storage = $storage;
+
         return $this;
     }
 
@@ -96,6 +97,7 @@ class IndexManager implements ManagerInterface
         assert($this->_storage !== null);
 
         $type = $this->_storage->getTypeByIndex($index);
+
         return $type ? $type : null;
     }
 

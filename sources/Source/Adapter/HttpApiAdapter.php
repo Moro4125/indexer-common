@@ -5,7 +5,6 @@ namespace Moro\Indexer\Common\Source\Adapter;
 use Moro\Indexer\Common\Accessories\ArraysGetByPathTrait;
 use Moro\Indexer\Common\Accessories\HttpRequest2ServerTrait;
 use Moro\Indexer\Common\Source\AdapterInterface;
-use Moro\Indexer\Common\Source\Exception\AdapterFailedException;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;
 
 /**

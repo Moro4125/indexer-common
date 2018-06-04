@@ -132,11 +132,10 @@ class DoctrineDBALAdapter implements AdapterInterface, DoctrineDBALConst
     private function _readMessageExists($for, $identifier, $from, $lockedBy): bool
     {
         $parameters = $this->_readBuilderParameters($for, $identifier, $from, $lockedBy, false);
-        $select = $this->_facade->statement(__METHOD__,
-            function (Connection $connection) use ($identifier, $from) {
-                return $this->_readCreateSelect($connection, $identifier, $from)
-                    ->getSQL();
-            });
+        $select = $this->_facade->statement(__METHOD__, function (Connection $connection) use ($identifier, $from) {
+            return $this->_readCreateSelect($connection, $identifier, $from)
+                ->getSQL();
+        });
 
         /** @noinspection PhpUnhandledExceptionInspection */
         if ($select->execute($parameters) && !$select->fetch()) {
@@ -162,11 +161,10 @@ class DoctrineDBALAdapter implements AdapterInterface, DoctrineDBALConst
     private function _readMessageLocked($for, $identifier, $from, $lockedBy): bool
     {
         $parameters = $this->_readBuilderParameters($for, $identifier, $from, $lockedBy, true);
-        $update = $this->_facade->statement(__METHOD__,
-            function (Connection $connection) use ($identifier, $from) {
-                return $this->_readCreateUpdate($connection, $identifier, $from)
-                    ->getSQL();
-            });
+        $update = $this->_facade->statement(__METHOD__, function (Connection $connection) use ($identifier, $from) {
+            return $this->_readCreateUpdate($connection, $identifier, $from)
+                ->getSQL();
+        });
 
         /** @noinspection PhpUnhandledExceptionInspection */
         return $update->execute($parameters) && $update->rowCount();

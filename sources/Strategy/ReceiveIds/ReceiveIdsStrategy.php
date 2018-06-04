@@ -2,8 +2,8 @@
 
 namespace Moro\Indexer\Common\Strategy\ReceiveIds;
 
-use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
 use Moro\Indexer\Common\Index\ManagerInterface;
+use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
 
 /**
  * Class ReceiveIdsStrategy

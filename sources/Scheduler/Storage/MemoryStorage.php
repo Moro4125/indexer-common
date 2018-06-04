@@ -44,6 +44,7 @@ class MemoryStorage implements StorageInterface
 
             unset($this->_schedule[$index]);
             unset($this->_entries[$index]);
+
             return true;
         }
 

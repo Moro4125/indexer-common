@@ -2,8 +2,8 @@
 
 namespace Moro\Indexer\Common\View\Exception;
 
-use Moro\Indexer\Common\View\ExceptionInterface;
 use Moro\Indexer\Common\Exception\UnknownTypeTrait;
+use Moro\Indexer\Common\View\ExceptionInterface;
 
 /**
  * Class UnknownKindException

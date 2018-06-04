@@ -4,8 +4,8 @@ namespace Moro\Indexer\Common\Scheduler\Manager;
 
 use Moro\Indexer\Common\Scheduler\EntryInterface;
 use Moro\Indexer\Common\Scheduler\FactoryInterface;
-use Moro\Indexer\Common\Scheduler\StorageInterface;
 use Moro\Indexer\Common\Scheduler\ManagerInterface;
+use Moro\Indexer\Common\Scheduler\StorageInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -37,7 +37,9 @@ class LazyManager implements ManagerInterface
      */
     public function setFactory(FactoryInterface $factory): ManagerInterface
     {
-        $this->_getManager()->setFactory($factory);
+        $this->_getManager()
+            ->setFactory($factory);
+
         return $this;
     }
 
@@ -47,7 +49,9 @@ class LazyManager implements ManagerInterface
      */
     public function setStorage(StorageInterface $storage): ManagerInterface
     {
-        $this->_getManager()->setStorage($storage);
+        $this->_getManager()
+            ->setStorage($storage);
+
         return $this;
     }
 
@@ -56,7 +60,8 @@ class LazyManager implements ManagerInterface
      */
     public function newEntry(): EntryInterface
     {
-        return $this->_getManager()->newEntry();
+        return $this->_getManager()
+            ->newEntry();
     }
 
     /**
@@ -65,7 +70,8 @@ class LazyManager implements ManagerInterface
      */
     public function defer(int $timestamp, EntryInterface $entry)
     {
-        $this->_getManager()->defer($timestamp, $entry);
+        $this->_getManager()
+            ->defer($timestamp, $entry);
     }
 
     /**
@@ -73,7 +79,8 @@ class LazyManager implements ManagerInterface
      */
     public function derive(): ?EntryInterface
     {
-        return $this->_getManager()->derive();
+        return $this->_getManager()
+            ->derive();
     }
 
     /** @noinspection PhpDocMissingThrowsInspection */

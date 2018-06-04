@@ -22,6 +22,7 @@ class RegulationResult implements ResultInterface
     public function addToIndex(string $index, string $order): ResultInterface
     {
         $this->_toIndex[$index] = $order;
+
         return $this;
     }
 
@@ -32,12 +33,14 @@ class RegulationResult implements ResultInterface
     public function addToScheduler(int $timestamp): ResultInterface
     {
         $this->_toScheduler[$timestamp] = $timestamp;
+
         return $this;
     }
 
     public function addUsedKind(string $kind): ResultInterface
     {
         $this->_usedKinds[$kind] = $kind;
+
         return $this;
     }
 

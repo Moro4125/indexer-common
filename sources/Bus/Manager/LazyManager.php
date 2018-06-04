@@ -35,7 +35,9 @@ class LazyManager implements ManagerInterface
      */
     public function setAdapter(AdapterInterface $storage): ManagerInterface
     {
-        $this->_getManager()->setAdapter($storage);
+        $this->_getManager()
+            ->setAdapter($storage);
+
         return $this;
     }
 
@@ -45,7 +47,8 @@ class LazyManager implements ManagerInterface
      */
     public function setOwner(string $owner): ManagerInterface
     {
-        $this->_getManager()->setOwner($owner);
+        $this->_getManager()
+            ->setOwner($owner);
 
         return $this;
     }
@@ -56,7 +59,8 @@ class LazyManager implements ManagerInterface
      */
     public function setTarget(string $target): ManagerInterface
     {
-        $this->_getManager()->setTarget($target);
+        $this->_getManager()
+            ->setTarget($target);
 
         return $this;
     }
@@ -67,7 +71,8 @@ class LazyManager implements ManagerInterface
      */
     public function setIdentifier(string $id): ManagerInterface
     {
-        $this->_getManager()->setIdentifier($id);
+        $this->_getManager()
+            ->setIdentifier($id);
 
         return $this;
     }
@@ -79,7 +84,8 @@ class LazyManager implements ManagerInterface
      */
     public function call(array $message, string $target = null): array
     {
-        return $this->_getManager()->call($message, $target);
+        return $this->_getManager()
+            ->call($message, $target);
     }
 
     /**
@@ -88,7 +94,8 @@ class LazyManager implements ManagerInterface
      */
     public function send(array $message, string $target = null)
     {
-        $this->_getManager()->send($message, $target);
+        $this->_getManager()
+            ->send($message, $target);
     }
 
     /**
@@ -98,7 +105,8 @@ class LazyManager implements ManagerInterface
      */
     public function read(string $for = null, string $from = null): ?array
     {
-        return $this->_getManager()->read($for, $from);
+        return $this->_getManager()
+            ->read($for, $from);
     }
 
     /** @noinspection PhpDocMissingThrowsInspection */

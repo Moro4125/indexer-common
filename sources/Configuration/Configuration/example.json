@@ -14,7 +14,10 @@
             "[version='1.0']"
           ],
           "rules": [
-            ["head/title", "name"]
+            [
+              "head/title",
+              "name"
+            ]
           ]
         }
       ],

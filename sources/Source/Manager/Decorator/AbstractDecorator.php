@@ -65,6 +65,7 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
     {
         $entity = $this->getDecoratedInstance()
             ->getEntity($type, $id);
+
         return $entity;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Moro\Indexer\Common\Source\Exception;
 
-use Moro\Indexer\Common\Source\ExceptionInterface;
 use Moro\Indexer\Common\Exception\UnknownTypeInterface;
 use Moro\Indexer\Common\Exception\UnknownTypeTrait;
+use Moro\Indexer\Common\Source\ExceptionInterface;
 
 /**
  * Class UnknownTypeException

@@ -16,12 +16,14 @@ abstract class AbstractDecorator implements StorageInterface, DecoratorInterface
 
     public function defer(int $timestamp, EntryInterface $entry)
     {
-        $this->getDecoratedInstance()->defer($timestamp, $entry);
+        $this->getDecoratedInstance()
+            ->defer($timestamp, $entry);
     }
 
     public function derive(EntryInterface $entry): bool
     {
-        return $this->getDecoratedInstance()->derive($entry);
+        return $this->getDecoratedInstance()
+            ->derive($entry);
     }
 
     public function getDecoratedInstance(): StorageInterface

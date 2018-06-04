@@ -22,7 +22,9 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function addType(TypeInterface $type): ManagerInterface
     {
-        $this->getDecoratedInstance()->addType($type);
+        $this->getDecoratedInstance()
+            ->addType($type);
+
         return $this;
     }
 
@@ -31,7 +33,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function getTypes(): array
     {
-        return $this->getDecoratedInstance()->getTypes();
+        return $this->getDecoratedInstance()
+            ->getTypes();
     }
 
     /**
@@ -40,7 +43,9 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function setStorage(StorageInterface $storage): ManagerInterface
     {
-        $this->getDecoratedInstance()->setStorage($storage);
+        $this->getDecoratedInstance()
+            ->setStorage($storage);
+
         return $this;
     }
 
@@ -51,7 +56,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function findKinds(string $type, string $id): array
     {
-        return $this->getDecoratedInstance()->findKinds($type, $id);
+        return $this->getDecoratedInstance()
+            ->findKinds($type, $id);
     }
 
     /**
@@ -61,7 +67,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function save(string $type, string $kind, EntityInterface $entity)
     {
-        $this->getDecoratedInstance()->save($type, $kind, $entity);
+        $this->getDecoratedInstance()
+            ->save($type, $kind, $entity);
     }
 
     /**
@@ -72,7 +79,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function load(string $type, string $kind, string $id): ?string
     {
-        return $this->getDecoratedInstance()->load($type, $kind, $id);
+        return $this->getDecoratedInstance()
+            ->load($type, $kind, $id);
     }
 
     /**
@@ -83,7 +91,8 @@ abstract class AbstractDecorator implements ManagerInterface, DecoratorInterface
      */
     public function drop(string $type, string $kind, string $id): bool
     {
-        return $this->getDecoratedInstance()->drop($type, $kind, $id);
+        return $this->getDecoratedInstance()
+            ->drop($type, $kind, $id);
     }
 
     /**

@@ -17,7 +17,8 @@ class EntityCacheDecorator implements UpdateStrategy
     /**
      * @param UpdateStrategy $strategy
      */
-    public function __construct(UpdateStrategy $strategy) {
+    public function __construct(UpdateStrategy $strategy)
+    {
         $this->_strategy = $strategy;
     }
 

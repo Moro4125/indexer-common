@@ -37,7 +37,9 @@ class LazyManager implements ManagerInterface
      */
     public function attach(string $event, callable $listener, int $priority = null): ManagerInterface
     {
-        $this->_getManager()->attach($event, $listener, $priority);
+        $this->_getManager()
+            ->attach($event, $listener, $priority);
+
         return $this;
     }
 
@@ -48,7 +50,9 @@ class LazyManager implements ManagerInterface
      */
     public function detach(string $event, callable $listener): ManagerInterface
     {
-        $this->_getManager()->detach($event, $listener);
+        $this->_getManager()
+            ->detach($event, $listener);
+
         return $this;
     }
 
@@ -57,7 +61,9 @@ class LazyManager implements ManagerInterface
      */
     public function init(): ManagerInterface
     {
-        $this->_getManager()->init();
+        $this->_getManager()
+            ->init();
+
         return $this;
     }
 
@@ -67,7 +73,9 @@ class LazyManager implements ManagerInterface
      */
     public function trigger(EventInterface $event): ManagerInterface
     {
-        $this->_getManager()->trigger($event);
+        $this->_getManager()
+            ->trigger($event);
+
         return $this;
     }
 
@@ -76,7 +84,8 @@ class LazyManager implements ManagerInterface
      */
     public function fire()
     {
-        $this->_getManager()->fire();
+        $this->_getManager()
+            ->fire();
     }
 
     /** @noinspection PhpDocMissingThrowsInspection */

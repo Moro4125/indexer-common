@@ -2,10 +2,10 @@
 
 namespace Moro\Indexer\Common\Regulation\Manager;
 
-use Moro\Indexer\Common\Regulation\ResultInterface;
 use Moro\Indexer\Common\Regulation\Exception\DuplicateTypeException;
 use Moro\Indexer\Common\Regulation\Exception\UnknownTypeException;
 use Moro\Indexer\Common\Regulation\ManagerInterface;
+use Moro\Indexer\Common\Regulation\ResultInterface;
 use Moro\Indexer\Common\Regulation\TypeInterface;
 use Moro\Indexer\Common\Source\EntityInterface;
 

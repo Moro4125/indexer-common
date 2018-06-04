@@ -15,22 +15,26 @@ abstract class AbstractDecorator implements StorageInterface, DecoratorInterface
 
     public function hasAlias(int $index): ?string
     {
-        return $this->getDecoratedInstance()->hasAlias($index);
+        return $this->getDecoratedInstance()
+            ->hasAlias($index);
     }
 
     public function hasIndex(string $alias): ?int
     {
-        return $this->getDecoratedInstance()->hasIndex($alias);
+        return $this->getDecoratedInstance()
+            ->hasIndex($alias);
     }
 
     public function getTypeByIndex(string $alias): ?string
     {
-        return $this->getDecoratedInstance()->getTypeByIndex($alias);
+        return $this->getDecoratedInstance()
+            ->getTypeByIndex($alias);
     }
 
     public function dropIndex(int $index): bool
     {
-        return $this->getDecoratedInstance()->dropIndex($index);
+        return $this->getDecoratedInstance()
+            ->dropIndex($index);
     }
 
     public function addIndex(string $alias, string $type): int

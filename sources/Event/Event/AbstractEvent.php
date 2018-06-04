@@ -26,6 +26,7 @@ class AbstractEvent implements EventInterface
     public function stopPropagation(): EventInterface
     {
         $this->_isPropagationStopped = true;
+
         return $this;
     }
 

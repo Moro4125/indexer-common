@@ -26,6 +26,7 @@ class ViewType implements TypeInterface
     public function setCode(string $code): TypeInterface
     {
         $this->_code = $code;
+
         return $this;
     }
 
@@ -50,6 +51,7 @@ class ViewType implements TypeInterface
         }
 
         $this->_list[$code] = $kind;
+
         return $this;
     }
 

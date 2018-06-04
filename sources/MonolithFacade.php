@@ -8,12 +8,12 @@ use Moro\Indexer\Common\Regulation\Exception\InstructionFailedException;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\Exception\WrongStructureException;
+use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
 use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
 use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
 use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
-use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Psr\Log\LoggerInterface;
 
 /**

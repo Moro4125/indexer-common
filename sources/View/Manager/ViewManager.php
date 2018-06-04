@@ -33,6 +33,7 @@ class ViewManager implements ManagerInterface
         }
 
         $this->_types[$code] = $type;
+
         return $this;
     }
 
@@ -51,6 +52,7 @@ class ViewManager implements ManagerInterface
     public function setStorage(StorageInterface $storage): ManagerInterface
     {
         $this->_storage = $storage;
+
         return $this;
     }
 

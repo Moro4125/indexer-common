@@ -8,9 +8,9 @@ use Moro\Indexer\Common\Event\Event\SchedulerDeriveEvent;
 use Moro\Indexer\Common\Event\Event\WaitRandomTickEvent;
 use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Scheduler\EntryInterface;
+use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\ManagerInterface as SourceManager;
-use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;
 use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;
 
@@ -109,7 +109,8 @@ class WaitingForActionStrategy implements WaitingForActionInterface
                     $entry->setAction('remove');
 
                     $event = new SchedulerDeriveEvent($entry, time());
-                    $this->_eventManager->init()->trigger($event);
+                    $this->_eventManager->init()
+                        ->trigger($event);
                 }
             }
 

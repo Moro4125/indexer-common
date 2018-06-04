@@ -38,6 +38,7 @@ class UniversalEntity implements EntityInterface, \ArrayAccess
         }
 
         $this->_data = $source;
+
         return $this;
     }
 

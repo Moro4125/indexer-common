@@ -2,10 +2,10 @@
 
 namespace Moro\Indexer\Common\Strategy\ReceiveViews;
 
-use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManager;
-use Moro\Indexer\Common\View\ManagerInterface as ViewManager;
+use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;
+use Moro\Indexer\Common\View\ManagerInterface as ViewManager;
 
 /**
  * Class ReceiveViewsStrategy
@@ -53,7 +53,7 @@ class ReceiveViewsStrategy implements ReceiveViewsInterface
         $list = $this->_indexManager->select($index, $offset, $limit);
         $type = $this->_indexManager->getTypeByIndex($index);
 
-        $this->_transactionManager->execute(function() use (&$list, $type, $kind) {
+        $this->_transactionManager->execute(function () use (&$list, $type, $kind) {
             foreach ($list as &$value) {
                 $value = $this->_viewManager->load($type, $kind, $value);
             }

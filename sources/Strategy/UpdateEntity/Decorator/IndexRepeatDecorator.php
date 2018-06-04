@@ -3,10 +3,10 @@
 namespace Moro\Indexer\Common\Strategy\UpdateEntity\Decorator;
 
 use Moro\Indexer\Common\Event\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Index\Storage\Decorator\AliasCacheDecorator;
-use Moro\Indexer\Common\Strategy\UpdateEntityInterface as UpdateStrategy;
 use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Index\Exception\DuplicateIndexException;
+use Moro\Indexer\Common\Index\Storage\Decorator\AliasCacheDecorator;
+use Moro\Indexer\Common\Strategy\UpdateEntityInterface as UpdateStrategy;
 
 /**
  * Class IndexRepeatDecorator

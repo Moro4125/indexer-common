@@ -2,8 +2,8 @@
 
 namespace Moro\Indexer\Common\Index\Manager;
 
-use Moro\Indexer\Common\Index\StorageInterface;
 use Moro\Indexer\Common\Index\ManagerInterface;
+use Moro\Indexer\Common\Index\StorageInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -35,7 +35,9 @@ class LazyManager implements ManagerInterface
      */
     public function setStorage(StorageInterface $storage): ManagerInterface
     {
-        $this->_getManager()->setStorage($storage);
+        $this->_getManager()
+            ->setStorage($storage);
+
         return $this;
     }
 
@@ -45,7 +47,8 @@ class LazyManager implements ManagerInterface
      */
     public function hasIndex(string $alias): bool
     {
-        return $this->_getManager()->hasIndex($alias);
+        return $this->_getManager()
+            ->hasIndex($alias);
     }
 
     /**
@@ -54,7 +57,8 @@ class LazyManager implements ManagerInterface
      */
     public function addIndex(string $alias, string $type)
     {
-        $this->_getManager()->addIndex($alias, $type);
+        $this->_getManager()
+            ->addIndex($alias, $type);
     }
 
     /**
@@ -64,7 +68,8 @@ class LazyManager implements ManagerInterface
      */
     public function findIndexes(string $type, string $id = null): array
     {
-        return $this->_getManager()->findIndexes($type, $id);
+        return $this->_getManager()
+            ->findIndexes($type, $id);
     }
 
     /**
@@ -73,7 +78,8 @@ class LazyManager implements ManagerInterface
      */
     public function dropIndex(string $alias): bool
     {
-        return $this->_getManager()->dropIndex($alias);
+        return $this->_getManager()
+            ->dropIndex($alias);
     }
 
     /**
@@ -82,7 +88,8 @@ class LazyManager implements ManagerInterface
      */
     public function getTypeByIndex(string $index): ?string
     {
-        return $this->_getManager()->getTypeByIndex($index);
+        return $this->_getManager()
+            ->getTypeByIndex($index);
     }
 
     /**
@@ -92,7 +99,8 @@ class LazyManager implements ManagerInterface
      */
     public function insert(string $alias, string $id, string $order = null)
     {
-        $this->_getManager()->insert($alias, $id, $order);
+        $this->_getManager()
+            ->insert($alias, $id, $order);
     }
 
     /**
@@ -104,7 +112,8 @@ class LazyManager implements ManagerInterface
      */
     public function select(string $alias, int $from = null, int $limit = null, bool $withOrder = null): array
     {
-        return $this->_getManager()->select($alias, $from, $limit, $withOrder);
+        return $this->_getManager()
+            ->select($alias, $from, $limit, $withOrder);
     }
 
     /**
@@ -114,7 +123,8 @@ class LazyManager implements ManagerInterface
      */
     public function remove(string $alias, string $id): bool
     {
-        return $this->_getManager()->remove($alias, $id);
+        return $this->_getManager()
+            ->remove($alias, $id);
     }
 
     /** @noinspection PhpDocMissingThrowsInspection */

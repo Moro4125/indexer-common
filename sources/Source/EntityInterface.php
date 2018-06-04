@@ -2,8 +2,8 @@
 
 namespace Moro\Indexer\Common\Source;
 
-use Moro\Indexer\Common\Source\Exception\WrongStructureException;
 use JsonSerializable;
+use Moro\Indexer\Common\Source\Exception\WrongStructureException;
 
 /**
  * Interface EntityInterface

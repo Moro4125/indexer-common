@@ -12,8 +12,8 @@ use Moro\Indexer\Common\Source\TypeInterface;
 class EntityCacheDecorator extends AbstractDecorator
 {
     private static $cache;
-    private $_limit;
-    private $_code;
+    private        $_limit;
+    private        $_code;
 
     public function __construct(TypeInterface $type, int $limit = null)
     {
@@ -23,7 +23,9 @@ class EntityCacheDecorator extends AbstractDecorator
 
     public function getCode(): string
     {
-        $code = $this->_code ?? ($this->_code = $this->getDecoratedInstance()->getCode());
+        $code = $this->_code ?? ($this->_code = $this->getDecoratedInstance()
+                ->getCode());
+
         return $code;
     }
 
@@ -31,7 +33,8 @@ class EntityCacheDecorator extends AbstractDecorator
     {
         $code = $this->_code ?? $this->getCode();
 
-        $entity = self::$cache[$code][$id] ?? $this->getDecoratedInstance()->getEntityById($id);
+        $entity = self::$cache[$code][$id] ?? $this->getDecoratedInstance()
+                ->getEntityById($id);
         unset(self::$cache[$code][$id]);
         self::$cache[$code][$id] = $entity;
 
