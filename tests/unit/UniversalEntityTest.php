@@ -61,6 +61,7 @@ class UniversalEntityTest extends \PHPUnit\Framework\TestCase
             'empty-list'  => [],
             'author'      => '%content/authors|first%',
             'producer'    => [
+                'years' => 27,
                 '@path' => 'content/authors|nth("2")',
             ],
             'quot\'s'     => [
@@ -309,14 +310,34 @@ class UniversalEntityTest extends \PHPUnit\Framework\TestCase
         });
 
         $this->specify('Test _replaceNode', function () use ($entity) {
+            $record = ['name' => 'Echo', 'gender' => 'W', 'unique' => true, 'years' => 25];
+
             verify(isset($entity['author']))->true();
             verify($entity['author'])->same(['name' => 'Alpha', 'gender' => 'M']);
 
             verify(isset($entity['author/name']))->true();
             verify($entity['author/name'])->same('Alpha');
 
+            verify(isset($entity['producer/years']))->true();
+            verify($entity['producer/years'])->same(27);
+
+            verify(isset($entity['producer[years="25"]']))->false();
+            verify($entity['producer[years="25"]'])->null();
+
+            verify(isset($entity['producer[years="27"]']))->true();
+            verify($entity['producer[years="27"]'])->same($record);
+
+            verify(isset($entity['producer[years="27"]/years']))->true();
+            verify($entity['producer[years="27"]/years'])->same(27);
+
+            verify(isset($entity['producer[years="27"]/name']))->true();
+            verify($entity['producer[years="27"]/name'])->same('Echo');
+
+            verify(isset($entity['producer[years="27"]/name/unknown']))->false();
+            verify($entity['producer[years="27"]/name/unknown'])->null();
+
             verify(isset($entity['producer']))->true();
-            verify($entity['producer'])->same(['name' => 'Echo', 'gender' => 'W', 'unique' => true, 'years' => 25]);
+            verify($entity['producer'])->same($record);
 
             verify(isset($entity['producer/name']))->true();
             verify($entity['producer/name'])->same('Echo');

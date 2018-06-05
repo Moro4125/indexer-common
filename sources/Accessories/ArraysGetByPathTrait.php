@@ -10,6 +10,8 @@ use RuntimeException;
  */
 trait ArraysGetByPathTrait
 {
+    private $_silent = true;
+
     protected function _getByPath(string $path, array $data, bool &$flag = null)
     {
         $pattern = '/(?<!\\\\)( |\\/|\\[|\\]|!=|>|<|=|"|\'|,|\\(|\\)|\\|)/';
@@ -50,7 +52,7 @@ trait ArraysGetByPathTrait
         return $results;
     }
 
-    protected function _searchResults(array $data, ?bool &$flag, array $chunks, array $root): array
+    protected function _searchResults(array $data, ?bool &$flag, array $chunks, array $root)
     {
         $results = [];
         $chunk = array_shift($chunks);
@@ -87,23 +89,14 @@ trait ArraysGetByPathTrait
             $chunk = array_shift($chunks);
         }
 
-        if ($chunk === null) {
-            return [$data];
-        }
-
-        $updateResults = function ($value) use ($root, &$chunks, &$flag, &$results) {
-            $value = $this->_replaceNode($value, $root);
-
-            if (!$chunks) {
-                $results[] = $value;
-            } elseif (is_array($value)) {
-                $values = $this->_searchResults($value, $flag, $chunks, $root);
-                $results = array_merge($results, $values);
-            }
-        };
-
         if ($chunk === '/') {
             $chunk = array_shift($chunks);
+        }
+
+        if ($chunk === null) {
+            $this->_replaceNode($data, $root);
+
+            return [$data];
         }
 
         if (strpos($chunk, '*') !== false) {
@@ -112,14 +105,66 @@ trait ArraysGetByPathTrait
 
             foreach ($data as $key => $value) {
                 if (preg_match($pattern, (string)$key)) {
-                    $updateResults($value);
+                    $this->_updateResults($value, $root, $chunks, $flag, $results);
                 }
             }
         } elseif (array_key_exists($chunk, $data)) {
-            $updateResults($data[$chunk]);
+            $this->_updateResults($data[$chunk], $root, $chunks, $flag, $results);
+        } elseif (!$this->_silent) {
+            if ($this->_replaceNode($data, $root)) {
+                array_unshift($chunks, $chunk);
+
+                return $this->_searchResults($data, $flag, $chunks, $root);
+            }
+
+            throw new RuntimeException(static::class);
         }
 
         return $results;
+    }
+
+    protected function _updateResults($value, $root, $chunks, &$flag, &$results)
+    {
+        if (!$chunks) {
+            $this->_replaceNode($value, $root);
+            $results[] = $value;
+
+            return;
+        }
+
+        try {
+            $silent = $this->_silent;
+            $this->_silent = false;
+
+            if (is_array($value)) {
+                $values = $this->_searchResults($value, $flag, $chunks, $root);
+                $results = array_merge($results, $values);
+
+                return;
+            }
+        } catch (RuntimeException $exception) {
+            if (!$silent || $exception->getMessage() != static::class) {
+                throw $exception;
+            }
+        }
+        finally {
+            $this->_silent = $silent;
+        }
+
+        try {
+            $silent = $this->_silent;
+            $this->_silent = true;
+
+            $this->_replaceNode($value, $root);
+
+            if (is_array($value)) {
+                $values = $this->_searchResults($value, $flag, $chunks, $root);
+                $results = array_merge($results, $values);
+            }
+        }
+        finally {
+            $this->_silent = $silent;
+        }
     }
 
     protected function _filterResults(array $results, ?bool &$flag, array $chunks, array $root): array
@@ -174,17 +219,23 @@ trait ArraysGetByPathTrait
         return $r ?? [];
     }
 
-    protected function _replaceNode($value, $root)
+    protected function _replaceNode(&$value, $root): bool
     {
         if (is_array($value) && isset($value['@path']) && is_string($value['@path'])) {
             $value = $this->_getByPath($value['@path'], $root, $flag);
             $value = count($value) ? ($flag ? $value : reset($value)) : null;
-        } elseif (is_string($value) && strncmp($value, '%', 1) === 0 && substr($value, -1) === '%') {
-            $value = $this->_getByPath(substr($value, 1, -1), $root, $flag);
-            $value = count($value) ? ($flag ? $value : reset($value)) : null;
+
+            return true;
         }
 
-        return $value;
+        if (is_string($value) && strncmp($value, '%', 1) === 0 && substr($value, -1) === '%') {
+            $value = $this->_getByPath(substr($value, 1, -1), $root, $flag);
+            $value = count($value) ? ($flag ? $value : reset($value)) : null;
+
+            return true;
+        }
+
+        return false;
     }
 
     protected function _executeFilter(string $name, array $results, array $arguments, ?bool &$flag): array

@@ -108,7 +108,7 @@ class UniversalEntity implements EntityInterface, \ArrayAccess
         return $results;
     }
 
-    protected function _replaceNode($value, $root)
+    protected function _replaceNode(&$value, $root): bool
     {
         if ($this->_manager) {
             if (is_array($value) && ($v = $value['@id'] ?? null) && is_string($v) && strpos($v, ':')) {
@@ -119,6 +119,8 @@ class UniversalEntity implements EntityInterface, \ArrayAccess
                 } catch (NotFoundException $exception) {
                     $value = null;
                 }
+
+                return true;
             }
         }
 
