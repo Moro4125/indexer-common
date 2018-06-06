@@ -111,7 +111,7 @@ trait ArraysGetByPathTrait
         } elseif (array_key_exists($chunk, $data)) {
             $this->_updateResults($data[$chunk], $root, $chunks, $flag, $results);
         } elseif (!$this->_silent) {
-            if ($this->_replaceNode($data, $root)) {
+            if ($this->_replaceNode($data, $root) && is_array($data)) {
                 array_unshift($chunks, $chunk);
 
                 return $this->_searchResults($data, $flag, $chunks, $root);
