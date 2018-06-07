@@ -16,6 +16,8 @@ use Moro\Indexer\Common\ClientFacade;
 use Moro\Indexer\Common\Dispatcher\Manager\EventManager;
 use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Middleware\SchedulerMiddleware;
+use Moro\Indexer\Common\Dispatcher\MiddlewareInterface;
 use Moro\Indexer\Common\Index\Manager\IndexManager;
 use Moro\Indexer\Common\Index\Manager\LazyManager as IndexLazyManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManagerInterface;
@@ -182,6 +184,8 @@ class CommonProvider
         $tags->register(SourceTypeInterface::class);
         $tags->register(RegulationTypeInterface::class);
         $tags->register(ViewTypeInterface::class);
+
+        $tags->add(MiddlewareInterface::class, SchedulerMiddleware::class);
     }
 
     public function boot(Container $container, Parameters $parameters, Aliases $aliases)
@@ -354,14 +358,22 @@ class CommonProvider
         return new $class($container, BusManagerInterface::class);
     }
 
-    public function eventManager(Container $container, Parameters $parameters): DispatcherManagerInterface
+    public function dispatcherManager(Container $container, Parameters $parameters): DispatcherManagerInterface
     {
         $class = $parameters->get(self::P_EVENT_MANAGER_CLASS);
 
         return $container->has($class) ? $container->get($class) : new $class;
     }
 
-    public function eventManagerLazy(Container $container, Parameters $parameters): DispatcherLazyManager
+    public function dispatcherManagerInit(DispatcherManagerInterface $dispatcher, Container $container, Tags $tags)
+    {
+        foreach ($container->getCollection(MiddlewareInterface::class) as $key => $middleware) {
+            $meta = $tags->metaByTagAndKey(MiddlewareInterface::class, $key);
+            $dispatcher->wrap($middleware, $meta['priority'] ?? DispatcherManagerInterface::MIDDLE);
+        }
+    }
+
+    public function dispatcherManagerLazy(Container $container, Parameters $parameters): DispatcherLazyManager
     {
         $class = $parameters->get(self::P_EVENT_MANAGER_LAZY_CLASS);
 
@@ -370,6 +382,13 @@ class CommonProvider
         }
 
         return new $class($container, DispatcherManagerInterface::class);
+    }
+
+    public function dispatcherSchedulerMiddleware(
+        DispatcherLazyManager $dispatcher,
+        SchedulerLazyManager $manager
+    ): SchedulerMiddleware {
+        return new SchedulerMiddleware($dispatcher, $manager);
     }
 
     public function sourceAdapter(Container $container, Parameters $parameters, ...$arguments): AdapterInterface

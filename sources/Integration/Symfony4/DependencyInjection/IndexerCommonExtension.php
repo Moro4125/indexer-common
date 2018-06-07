@@ -9,6 +9,8 @@ use Moro\Indexer\Common\Bus\ManagerInterface as BusManagerInterface;
 use Moro\Indexer\Common\ClientFacade;
 use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Middleware\SchedulerMiddleware;
+use Moro\Indexer\Common\Dispatcher\MiddlewareInterface;
 use Moro\Indexer\Common\Index\Manager\LazyManager as IndexLazyManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManagerInterface;
 use Moro\Indexer\Common\Index\Storage\Decorator\AliasCacheDecorator as IndexStorageCacheDecorator;
@@ -115,6 +117,10 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
 
         $container->register(DispatcherLazyManager::class, $config[Config::P_EVENT_MANAGER_LAZY_CLASS])
             ->setArguments([new Reference(ContainerInterface::class), DispatcherManagerInterface::class]);
+
+        $container->register(SchedulerMiddleware::class)
+            ->setArguments([new Reference(DispatcherLazyManager::class), new Reference(SchedulerLazyManager::class)])
+            ->addTag(MiddlewareInterface::class);
 
         // Index manager.
 
@@ -403,6 +409,14 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
                 $priority = $attr['priority'] ?? null;
 
                 $definition->addMethodCall('attach', [$event, new Reference($id), $priority]);
+            }
+        }
+
+        foreach ($container->findTaggedServiceIds(MiddlewareInterface::class) as $id => $attributes) {
+            foreach ($attributes as $attr) {
+                $priority = $attr['priority'] ?? null;
+
+                $definition->addMethodCall('wrap', [new Reference($id), $priority]);
             }
         }
 

@@ -7,12 +7,11 @@ use Moro\Indexer\Common\Dispatcher\Event\MessageIsDerivedEvent;
 use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
 use Moro\Indexer\Common\Dispatcher\Event\WaitRandomTickEvent;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
-use Moro\Indexer\Common\Scheduler\EntryInterface;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;
-use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\ManagerInterface as SourceManager;
 use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;
+use Throwable;
 
 /**
  * Class WaitingForActionStrategy
@@ -55,6 +54,7 @@ class WaitingForActionStrategy implements WaitingForActionInterface
 
     /**
      * @param int|null $limit
+     * @throws Throwable
      */
     public function wait(int $limit = null)
     {
@@ -100,19 +100,6 @@ class WaitingForActionStrategy implements WaitingForActionInterface
                     usleep(mt_rand(1000, 100000)); // 1000000 = 1 sec.
                 }
             });
-
-            if ($result instanceof EntryInterface && $result->getAction() == 'update') {
-                try {
-                    $this->_eventManager->fire();
-                } catch (NotFoundException $exception) {
-                    $entry = clone $result;
-                    $entry->setAction('remove');
-
-                    $event = new SchedulerDeriveEvent($entry, time());
-                    $this->_eventManager->init()
-                        ->trigger($event);
-                }
-            }
 
             $this->_eventManager->fire();
         }
