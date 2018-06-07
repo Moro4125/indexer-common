@@ -1,19 +1,20 @@
 <?php
 
+use Moro\Indexer\Common\Dispatcher\Event\AbstractEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\IndexUpdateEvent;
+use Moro\Indexer\Common\Dispatcher\Event\MessageIsDerivedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeferEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewDropEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewSaveEvent;
 use Moro\Indexer\Common\Dispatcher\Manager\EventManager;
 use Moro\Indexer\Common\Dispatcher\Manager\LazyManager;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface;
-use Moro\Indexer\Common\Dispatcher\Event\AbstractEvent;
-use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
-use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeferEvent;
-use Moro\Indexer\Common\Dispatcher\Event\MessageIsDerivedEvent;
-use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Dispatcher\Event\IndexUpdateEvent;
-use Moro\Indexer\Common\Dispatcher\Event\ViewDropEvent;
-use Moro\Indexer\Common\Dispatcher\Event\ViewSaveEvent;
 use Moro\Indexer\Common\Scheduler\Entry\SchedulerEntry;
-use Moro\Indexer\Test\SimpleContainer;
 use Moro\Indexer\Test\DummyEvent;
+use Moro\Indexer\Test\SimpleContainer;
+use Moro\Indexer\Test\SimpleMiddleware;
 
 /**
  * Class EventTest
@@ -28,44 +29,104 @@ class EventTest extends \PHPUnit\Framework\TestCase
         /** @var EventManager $manager */
         $manager = $manager ?? new EventManager();
 
-        $this->specify('Test empty manager', function() use ($manager) {
+        $this->specify('Test empty manager', function () use ($manager) {
             verify($manager->trigger(new AbstractEvent()))->same($manager);
             $manager->fire();
         });
 
-        $this->specify('Trigger and fire event', function() use ($manager) {
+        $this->specify('Middleware and fire event', function () use ($manager) {
             $called = 0;
-            $listener = function($e) use (&$called) {
+            $middleware = new SimpleMiddleware(function (AbstractEvent $event, callable $next) use (&$called) {
+                unset($event);
+                $called++;
+                $next();
+            });
+
+            $manager->wrap($middleware);
+
+            $manager->trigger(new AbstractEvent())
+                ->fire();
+            verify($called)->same(1);
+
+            $manager->trigger(new AbstractEvent())
+                ->fire();
+            verify($called)->same(2);
+
+            $manager->unwrap($middleware);
+
+            $manager->trigger(new AbstractEvent())
+                ->fire();
+            verify($called)->same(2);
+        });
+
+        $this->specify('Middleware with priority and fire event', function () use ($manager) {
+            $called = [];
+            $middleware1 = new SimpleMiddleware(function (AbstractEvent $event, callable $next) use (&$called) {
+                unset($event);
+                $called[] = 1;
+                $next();
+            });
+            $middleware2 = new SimpleMiddleware(function (AbstractEvent $event, callable $next) use (&$called) {
+                unset($event);
+                $called[] = 2;
+                $next();
+            });
+            $middleware3 = new SimpleMiddleware(function (AbstractEvent $event, callable $next) use (&$called) {
+                unset($event);
+                $called[] = 3;
+                $next();
+            });
+
+            $manager->wrap($middleware1, ManagerInterface::MIDDLE);
+            $manager->wrap($middleware2, ManagerInterface::AFTER);
+            $manager->wrap($middleware3, ManagerInterface::BEFORE);
+
+            $manager->trigger(new AbstractEvent())
+                ->trigger(new AbstractEvent())
+                ->fire();
+            verify($called)->same([3, 1, 2, 3, 1, 2]);
+        });
+
+        $this->specify('Trigger and fire event', function () use ($manager) {
+            $called = 0;
+            $listener = function ($e) use (&$called) {
                 $called++;
                 verify($e)->isInstanceOf(AbstractEvent::class);
             };
 
             verify($manager->attach(AbstractEvent::class, $listener))->same($manager);
-            $manager->trigger(new AbstractEvent())->fire();
+
+            $manager->trigger(new AbstractEvent())
+                ->fire();
             verify($called)->same(1);
+            $manager->trigger(new AbstractEvent())
+                ->fire();
+            verify($called)->same(2);
+
             verify($manager->detach(AbstractEvent::class, $listener))->same($manager);
 
-            $manager->trigger(new AbstractEvent())->fire();
-            verify($called)->same(1);
+            $manager->trigger(new AbstractEvent())
+                ->fire();
+            verify($called)->same(2);
         });
 
-        $this->specify('Trigger and fire event with priority', function() use ($manager) {
+        $this->specify('Trigger and fire event with priority', function () use ($manager) {
             $called = [];
-            $listener1 = function($e) use (&$called) {
+            $listener1 = function ($e) use (&$called) {
                 $called[] = 1;
                 verify($e)->isInstanceOf(AbstractEvent::class);
             };
-            $listener2 = function(AbstractEvent $e) use (&$called) {
+            $listener2 = function (AbstractEvent $e) use (&$called) {
                 $called[] = 2;
                 verify($e)->isInstanceOf(AbstractEvent::class);
                 $e->stopPropagation();
             };
-            $listener3 = function($e) use (&$called) {
+            $listener3 = function ($e) use (&$called) {
                 $called[] = 3;
                 verify($e)->isInstanceOf(AbstractEvent::class);
             };
 
-            $listener4 = function() use (&$called) {
+            $listener4 = function () use (&$called) {
                 $called[] = 4;
             };
 
@@ -73,9 +134,11 @@ class EventTest extends \PHPUnit\Framework\TestCase
             verify($manager->attach(AbstractEvent::class, $listener2, ManagerInterface::AFTER))->same($manager);
             verify($manager->attach(AbstractEvent::class, $listener3, ManagerInterface::BEFORE))->same($manager);
             verify($manager->attach(AbstractEvent::class, $listener4, 0))->same($manager);
-            $manager->trigger(new AbstractEvent())->fire();
-            $manager->trigger(new DummyEvent())->fire();
-            verify($called)->same([3,1,2]);
+            $manager->trigger(new AbstractEvent())
+                ->fire();
+            $manager->trigger(new DummyEvent())
+                ->fire();
+            verify($called)->same([3, 1, 2]);
         });
     }
 

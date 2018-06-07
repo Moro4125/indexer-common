@@ -4,6 +4,7 @@ namespace Moro\Indexer\Common\Dispatcher\Manager;
 
 use Moro\Indexer\Common\Dispatcher\EventInterface;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface;
+use Moro\Indexer\Common\Dispatcher\MiddlewareInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -27,6 +28,31 @@ class LazyManager implements ManagerInterface
     {
         $this->_container = $container;
         $this->_manager = $manager;
+    }
+
+    /**
+     * @param MiddlewareInterface $middleware
+     * @param int|null $priority
+     * @return ManagerInterface
+     */
+    public function wrap(MiddlewareInterface $middleware, int $priority = null): ManagerInterface
+    {
+        $this->_getManager()
+            ->wrap($middleware, $priority);
+
+        return $this;
+    }
+
+    /**
+     * @param MiddlewareInterface $middleware
+     * @return ManagerInterface
+     */
+    public function unwrap(MiddlewareInterface $middleware): ManagerInterface
+    {
+        $this->_getManager()
+            ->unwrap($middleware);
+
+        return $this;
     }
 
     /**

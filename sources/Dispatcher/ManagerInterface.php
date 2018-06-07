@@ -15,6 +15,19 @@ interface ManagerInterface
     const LAST   = 10;
 
     /**
+     * @param MiddlewareInterface $middleware
+     * @param int|null $priority
+     * @return ManagerInterface
+     */
+    function wrap(MiddlewareInterface $middleware, int $priority = null): ManagerInterface;
+
+    /**
+     * @param MiddlewareInterface $middleware
+     * @return ManagerInterface
+     */
+    function unwrap(MiddlewareInterface $middleware): ManagerInterface;
+
+    /**
      * @param string $event
      * @param callable $listener
      * @param int|null $priority
