@@ -2,9 +2,9 @@
 
 namespace Moro\Indexer\Common\Strategy\RemoveEntity;
 
-use Moro\Indexer\Common\Event\Event\IndexUpdateEvent;
-use Moro\Indexer\Common\Event\Event\ViewDropEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\IndexUpdateEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewDropEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManager;
 use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;

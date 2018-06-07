@@ -3,9 +3,9 @@
 namespace Moro\Indexer\Common\Strategy\UpdateEntity\Decorator;
 
 use Exception;
-use Moro\Indexer\Common\Event\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Event\Event\SchedulerDeferEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeferEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException;
 use Moro\Indexer\Common\Strategy\UpdateEntityInterface as UpdateStrategy;

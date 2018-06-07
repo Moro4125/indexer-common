@@ -1,10 +1,10 @@
 <?php
 
-namespace Moro\Indexer\Common\Event\Event;
+namespace Moro\Indexer\Common\Dispatcher\Event;
 
 /**
  * Class ViewSaveEvent
- * @package Moro\Indexer\Common\Event\Event
+ * @package Moro\Indexer\Common\Dispatcher\Event
  */
 class ViewSaveEvent extends AbstractEvent
 {

@@ -1,16 +1,16 @@
 <?php
 
-use Moro\Indexer\Common\Event\Manager\EventManager;
-use Moro\Indexer\Common\Event\Manager\LazyManager;
-use Moro\Indexer\Common\Event\ManagerInterface;
-use Moro\Indexer\Common\Event\Event\AbstractEvent;
-use Moro\Indexer\Common\Event\Event\SchedulerDeriveEvent;
-use Moro\Indexer\Common\Event\Event\SchedulerDeferEvent;
-use Moro\Indexer\Common\Event\Event\MessageIsDerivedEvent;
-use Moro\Indexer\Common\Event\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Event\Event\IndexUpdateEvent;
-use Moro\Indexer\Common\Event\Event\ViewDropEvent;
-use Moro\Indexer\Common\Event\Event\ViewSaveEvent;
+use Moro\Indexer\Common\Dispatcher\Manager\EventManager;
+use Moro\Indexer\Common\Dispatcher\Manager\LazyManager;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Event\AbstractEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeferEvent;
+use Moro\Indexer\Common\Dispatcher\Event\MessageIsDerivedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\IndexUpdateEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewDropEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewSaveEvent;
 use Moro\Indexer\Common\Scheduler\Entry\SchedulerEntry;
 use Moro\Indexer\Test\SimpleContainer;
 use Moro\Indexer\Test\DummyEvent;

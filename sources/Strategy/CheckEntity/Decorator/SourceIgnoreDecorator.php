@@ -2,8 +2,8 @@
 
 namespace Moro\Indexer\Common\Strategy\CheckEntity\Decorator;
 
-use Moro\Indexer\Common\Event\Event\ExceptionIgnoreEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionIgnoreEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManagerInterface;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 

@@ -3,7 +3,7 @@
 namespace Moro\Indexer\Common\Strategy\CheckEntity;
 
 use DateTime;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManager;
 use Moro\Indexer\Common\Scheduler\FactoryInterface as EntryFactory;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;

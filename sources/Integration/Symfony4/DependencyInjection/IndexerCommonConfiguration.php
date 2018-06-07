@@ -4,8 +4,8 @@ namespace Moro\Indexer\Common\Integration\Symfony4\DependencyInjection;
 
 use Moro\Indexer\Common\Bus\Manager\BusManager;
 use Moro\Indexer\Common\Bus\Manager\LazyManager as BusLazyManager;
-use Moro\Indexer\Common\Event\Manager\EventManager;
-use Moro\Indexer\Common\Event\Manager\LazyManager as EventLazyManager;
+use Moro\Indexer\Common\Dispatcher\Manager\EventManager;
+use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Index\Manager\IndexManager;
 use Moro\Indexer\Common\Index\Manager\LazyManager as IndexLazyManager;
 use Moro\Indexer\Common\Regulation\Manager\LazyManager as RegulationLazyManager;
@@ -120,7 +120,7 @@ class IndexerCommonConfiguration implements ConfigurationInterface
             ->defaultValue(EventManager::class);
 
         $root->scalarNode(self::P_EVENT_MANAGER_LAZY_CLASS)
-            ->defaultValue(EventLazyManager::class);
+            ->defaultValue(DispatcherLazyManager::class);
 
         $root->booleanNode(self::P_SOURCE_REPEAT)
             ->defaultValue(false);

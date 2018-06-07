@@ -2,7 +2,7 @@
 
 namespace Moro\Indexer\Common;
 
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Exception\UnknownTypeInterface;
 use Moro\Indexer\Common\Regulation\Exception\InstructionFailedException;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException;

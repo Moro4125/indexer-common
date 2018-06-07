@@ -3,12 +3,12 @@
 namespace Moro\Indexer\Common;
 
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManager;
-use Moro\Indexer\Common\Event\Event\ExceptionIgnoreEvent;
-use Moro\Indexer\Common\Event\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Event\Event\MessageIsDerivedEvent;
-use Moro\Indexer\Common\Event\Event\SchedulerDeriveEvent;
-use Moro\Indexer\Common\Event\Event\WaitRandomTickEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionIgnoreEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\MessageIsDerivedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
+use Moro\Indexer\Common\Dispatcher\Event\WaitRandomTickEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Exception\UnknownTypeInterface;
 use Moro\Indexer\Common\Scheduler\EntryInterface;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;

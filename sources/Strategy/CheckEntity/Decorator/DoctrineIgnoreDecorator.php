@@ -4,8 +4,8 @@ namespace Moro\Indexer\Common\Strategy\CheckEntity\Decorator;
 
 use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Doctrine\DBAL\Exception\RetryableException;
-use Moro\Indexer\Common\Event\Event\ExceptionIgnoreEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionIgnoreEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManagerInterface;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 
 /**

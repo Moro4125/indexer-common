@@ -1,12 +1,12 @@
 <?php
 
-namespace Moro\Indexer\Common\Event\Event;
+namespace Moro\Indexer\Common\Dispatcher\Event;
 
-use Moro\Indexer\Common\Event\EventInterface;
+use Moro\Indexer\Common\Dispatcher\EventInterface;
 
 /**
  * Class AbstractEvent
- * @package Moro\Indexer\Common\Event\Event
+ * @package Moro\Indexer\Common\Dispatcher\Event
  */
 class AbstractEvent implements EventInterface
 {

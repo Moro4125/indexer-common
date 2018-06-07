@@ -3,8 +3,8 @@
 use Moro\Container7\Container;
 use Moro\Container7\Parameters;
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManager;
-use Moro\Indexer\Common\Event\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Integration\Container7\CommonProvider;
 use Moro\Indexer\Common\Integration\Container7\ConfigurationProvider;
 use Moro\Indexer\Common\Integration\Container7\DoctrineDBALProvider;

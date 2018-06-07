@@ -2,11 +2,11 @@
 
 namespace Moro\Indexer\Common\Strategy\UpdateEntity;
 
-use Moro\Indexer\Common\Event\Event\IndexUpdateEvent;
-use Moro\Indexer\Common\Event\Event\SchedulerDeferEvent;
-use Moro\Indexer\Common\Event\Event\ViewDropEvent;
-use Moro\Indexer\Common\Event\Event\ViewSaveEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\IndexUpdateEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeferEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewDropEvent;
+use Moro\Indexer\Common\Dispatcher\Event\ViewSaveEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManager;
 use Moro\Indexer\Common\Regulation\ManagerInterface as RegulationManager;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;

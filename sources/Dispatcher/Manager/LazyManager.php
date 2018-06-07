@@ -1,14 +1,14 @@
 <?php
 
-namespace Moro\Indexer\Common\Event\Manager;
+namespace Moro\Indexer\Common\Dispatcher\Manager;
 
-use Moro\Indexer\Common\Event\EventInterface;
-use Moro\Indexer\Common\Event\ManagerInterface;
+use Moro\Indexer\Common\Dispatcher\EventInterface;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface;
 use Psr\Container\ContainerInterface;
 
 /**
  * Class LazyManager
- * @package Moro\Indexer\Common\Event\Manager
+ * @package Moro\Indexer\Common\Dispatcher\Manager
  */
 class LazyManager implements ManagerInterface
 {

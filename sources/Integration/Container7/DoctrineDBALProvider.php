@@ -8,7 +8,7 @@ use Moro\Container7\Container;
 use Moro\Container7\Parameters;
 use Moro\Container7\Tags;
 use Moro\Indexer\Common\Bus\Adapter\DoctrineDBALAdapter as BusAdapter;
-use Moro\Indexer\Common\Event\Manager\LazyManager as EventLazyManager;
+use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Index\Storage\DoctrineDBALStorage as IndexStorage;
 use Moro\Indexer\Common\Scheduler\Storage\Decorator\DoctrineRepeatDecorator as SchedulerRepeatDecorator;
 use Moro\Indexer\Common\Scheduler\Storage\DoctrineDBALStorage as SchedulerStorage;
@@ -114,21 +114,21 @@ class DoctrineDBALProvider
 
     public function updateEntityStrategyDecorator(
         UpdateEntityInterface $strategy,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): ?UpdateEntityInterface {
         return new UpdateRepeatDecorator($strategy, $events);
     }
 
     public function removeEntityStrategyDecorator(
         RemoveEntityInterface $strategy,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): ?RemoveEntityInterface {
         return new RemoveRepeatDecorator($strategy, $events);
     }
 
     public function checkEntityStrategyDecorator(
         CheckEntityInterface $strategy,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): ?CheckEntityInterface {
         return new CheckIgnoreDecorator($strategy, $events);
     }

@@ -1,15 +1,15 @@
 <?php
 
-namespace Moro\Indexer\Common\Event\Manager;
+namespace Moro\Indexer\Common\Dispatcher\Manager;
 
-use Moro\Indexer\Common\Event\EventInterface;
-use Moro\Indexer\Common\Event\ManagerInterface;
+use Moro\Indexer\Common\Dispatcher\EventInterface;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface;
 use SplObjectStorage;
 use SplPriorityQueue;
 
 /**
  * Class EventManager
- * @package Moro\Indexer\Common\Event\Manager
+ * @package Moro\Indexer\Common\Dispatcher\Manager
  */
 class EventManager implements ManagerInterface
 {

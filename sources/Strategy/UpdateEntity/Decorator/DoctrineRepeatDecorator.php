@@ -5,8 +5,8 @@ namespace Moro\Indexer\Common\Strategy\UpdateEntity\Decorator;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\DBAL\Exception\RetryableException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Moro\Indexer\Common\Event\Event\ExceptionRepairedEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Strategy\UpdateEntityInterface as UpdateStrategy;
 
 /**

@@ -7,8 +7,8 @@ use Moro\Indexer\Common\Bus\AdapterInterface as BusAdapterInterface;
 use Moro\Indexer\Common\Bus\Manager\LazyManager as BusLazyManager;
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManagerInterface;
 use Moro\Indexer\Common\ClientFacade;
-use Moro\Indexer\Common\Event\Manager\LazyManager as EventLazyManager;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherManagerInterface;
 use Moro\Indexer\Common\Index\Manager\LazyManager as IndexLazyManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManagerInterface;
 use Moro\Indexer\Common\Index\Storage\Decorator\AliasCacheDecorator as IndexStorageCacheDecorator;
@@ -108,13 +108,13 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $container->register(BusLazyManager::class, $config[Config::P_BUS_MANAGER_LAZY_CLASS])
             ->setArguments([new Reference(ContainerInterface::class), BusManagerInterface::class]);
 
-        // Event manager.
+        // Dispatcher manager.
 
-        $container->register(EventManagerInterface::class, $config[Config::P_EVENT_MANAGER_CLASS])
+        $container->register(DispatcherManagerInterface::class, $config[Config::P_EVENT_MANAGER_CLASS])
             ->setPublic(true);
 
-        $container->register(EventLazyManager::class, $config[Config::P_EVENT_MANAGER_LAZY_CLASS])
-            ->setArguments([new Reference(ContainerInterface::class), EventManagerInterface::class]);
+        $container->register(DispatcherLazyManager::class, $config[Config::P_EVENT_MANAGER_LAZY_CLASS])
+            ->setArguments([new Reference(ContainerInterface::class), DispatcherManagerInterface::class]);
 
         // Index manager.
 
@@ -276,7 +276,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             $definition->addArgument(new Reference(ViewLazyManager::class));
             $definition->addArgument(new Reference(SchedulerLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
-            $definition->addArgument(new Reference(EventLazyManager::class));
+            $definition->addArgument(new Reference(DispatcherLazyManager::class));
         }
 
         if ($config[Config::P_SOURCE_REPEAT]) {
@@ -286,7 +286,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
                 ->addArgument(new Reference($renamedId))
                 ->addArgument(new Reference(TransactionLazyManager::class))
                 ->addArgument(new Reference(SchedulerLazyManager::class))
-                ->addArgument(new Reference(EventLazyManager::class))
+                ->addArgument(new Reference(DispatcherLazyManager::class))
                 ->addArgument($config[Config::P_SOURCE_REPEAT_INTERVAL]);
         }
 
@@ -294,7 +294,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $container->register(IndexRepeatDecorator::class)
             ->setDecoratedService(UpdateEntityInterface::class, $renamedId, 15)
             ->addArgument(new Reference($renamedId))
-            ->addArgument(new Reference(EventLazyManager::class));
+            ->addArgument(new Reference(DispatcherLazyManager::class));
 
         if ($config[Config::P_ENTITY_CACHE]) {
             $renamedId = EntityCacheUpdateStrategy::class . '.inner';
@@ -310,7 +310,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             $definition->addArgument(new Reference(IndexLazyManager::class));
             $definition->addArgument(new Reference(ViewLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
-            $definition->addArgument(new Reference(EventLazyManager::class));
+            $definition->addArgument(new Reference(DispatcherLazyManager::class));
         }
 
         if ($config[Config::P_ENTITY_CACHE]) {
@@ -342,7 +342,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             $definition->addArgument(new Reference(BusLazyManager::class));
             $definition->addArgument(new Reference(SourceLazyManager::class));
             $definition->addArgument(new Reference(SchedulerLazyManager::class));
-            $definition->addArgument(new Reference(EventLazyManager::class));
+            $definition->addArgument(new Reference(DispatcherLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
         }
 
@@ -352,7 +352,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             $definition->addArgument(new Reference(SourceLazyManager::class));
             $definition->addArgument(new Reference(IndexLazyManager::class));
             $definition->addArgument(new Reference(SchedulerLazyManager::class));
-            $definition->addArgument(new Reference(EventLazyManager::class));
+            $definition->addArgument(new Reference(DispatcherLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
             $definition->addArgument(new Reference(SchedulerFactoryInterface::class));
         }
@@ -361,7 +361,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $container->register(SourceIgnoreDecorator::class)
             ->setDecoratedService(CheckEntityInterface::class, $renamedId, 15)
             ->addArgument(new Reference($renamedId))
-            ->addArgument(new Reference(EventLazyManager::class));
+            ->addArgument(new Reference(DispatcherLazyManager::class));
 
         // Facades.
 
@@ -372,7 +372,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             ->addArgument(new Reference(ReceiveViewsInterface::class))
             ->addArgument(new Reference(WaitingForActionInterface::class))
             ->addArgument(new Reference(CheckEntityInterface::class))
-            ->addArgument(new Reference(EventLazyManager::class));
+            ->addArgument(new Reference(DispatcherLazyManager::class));
 
         $container->register(BackendFacade::class, BackendFacade::class)
             ->addArgument(new Reference(UpdateEntityInterface::class))
@@ -381,7 +381,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             ->addArgument(new Reference(ReceiveViewsInterface::class))
             ->addArgument(new Reference(WaitingForActionInterface::class))
             ->addArgument(new Reference(CheckEntityInterface::class))
-            ->addArgument(new Reference(EventLazyManager::class))
+            ->addArgument(new Reference(DispatcherLazyManager::class))
             ->addArgument(new Reference(BusLazyManager::class));
 
         $container->register(ClientFacade::class, ClientFacade::class)
@@ -393,9 +393,9 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
      */
     public function process(ContainerBuilder $container)
     {
-        // Event manager.
+        // Dispatcher manager.
 
-        $definition = $container->getDefinition(EventManagerInterface::class);
+        $definition = $container->getDefinition(DispatcherManagerInterface::class);
 
         foreach ($container->findTaggedServiceIds('indexer.event_listener') as $id => $attributes) {
             foreach ($attributes as $attr) {

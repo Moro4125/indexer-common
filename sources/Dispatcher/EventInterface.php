@@ -1,10 +1,10 @@
 <?php
 
-namespace Moro\Indexer\Common\Event;
+namespace Moro\Indexer\Common\Dispatcher;
 
 /**
  * Interface EventInterface
- * @package Moro\Indexer\Common\Event
+ * @package Moro\Indexer\Common\Dispatcher
  */
 interface EventInterface
 {

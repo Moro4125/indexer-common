@@ -1,12 +1,12 @@
 <?php
 
-namespace Moro\Indexer\Common\Event\Event;
+namespace Moro\Indexer\Common\Dispatcher\Event;
 
 use Moro\Indexer\Common\Scheduler\EntryInterface;
 
 /**
  * Class SchedulerDeriveEvent
- * @package Moro\Indexer\Common\Event\Event
+ * @package Moro\Indexer\Common\Dispatcher\Event
  */
 class SchedulerDeriveEvent extends AbstractEvent
 {

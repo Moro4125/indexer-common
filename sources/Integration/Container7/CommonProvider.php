@@ -13,9 +13,9 @@ use Moro\Indexer\Common\Bus\Manager\BusManager;
 use Moro\Indexer\Common\Bus\Manager\LazyManager as BusLazyManager;
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManagerInterface;
 use Moro\Indexer\Common\ClientFacade;
-use Moro\Indexer\Common\Event\Manager\EventManager;
-use Moro\Indexer\Common\Event\Manager\LazyManager as EventLazyManager;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManagerInterface;
+use Moro\Indexer\Common\Dispatcher\Manager\EventManager;
+use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherManagerInterface;
 use Moro\Indexer\Common\Index\Manager\IndexManager;
 use Moro\Indexer\Common\Index\Manager\LazyManager as IndexLazyManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManagerInterface;
@@ -139,7 +139,7 @@ class CommonProvider
             self::P_BUS_MANAGER_CLASS              => BusManager::class,
             self::P_BUS_MANAGER_LAZY_CLASS         => BusLazyManager::class,
             self::P_EVENT_MANAGER_CLASS            => EventManager::class,
-            self::P_EVENT_MANAGER_LAZY_CLASS       => EventLazyManager::class,
+            self::P_EVENT_MANAGER_LAZY_CLASS       => DispatcherLazyManager::class,
             self::P_SOURCE_REPEAT                  => false,
             self::P_SOURCE_REPEAT_INTERVAL         => 16,
             self::P_SOURCE_TYPE_CLASS              => SourceType::class,
@@ -354,22 +354,22 @@ class CommonProvider
         return new $class($container, BusManagerInterface::class);
     }
 
-    public function eventManager(Container $container, Parameters $parameters): EventManagerInterface
+    public function eventManager(Container $container, Parameters $parameters): DispatcherManagerInterface
     {
         $class = $parameters->get(self::P_EVENT_MANAGER_CLASS);
 
         return $container->has($class) ? $container->get($class) : new $class;
     }
 
-    public function eventManagerLazy(Container $container, Parameters $parameters): EventLazyManager
+    public function eventManagerLazy(Container $container, Parameters $parameters): DispatcherLazyManager
     {
         $class = $parameters->get(self::P_EVENT_MANAGER_LAZY_CLASS);
 
-        if ($class != EventLazyManager::class && $container->has($class)) {
+        if ($class != DispatcherLazyManager::class && $container->has($class)) {
             return $container->get($class);
         }
 
-        return new $class($container, EventManagerInterface::class);
+        return new $class($container, DispatcherManagerInterface::class);
     }
 
     public function sourceAdapter(Container $container, Parameters $parameters, ...$arguments): AdapterInterface
@@ -651,7 +651,7 @@ class CommonProvider
         ViewLazyManager $view,
         SchedulerLazyManager $scheduler,
         TransactionLazyManager $transaction,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): UpdateEntityStrategy {
         return new UpdateEntityStrategy($source, $regulation, $index, $view, $scheduler, $transaction, $events);
     }
@@ -660,7 +660,7 @@ class CommonProvider
         UpdateEntityInterface $strategy,
         TransactionLazyManager $transaction,
         SchedulerLazyManager $scheduler,
-        EventLazyManager $events,
+        DispatcherLazyManager $events,
         Parameters $parameters
     ): ?SourceRepeatDecorator {
         if ($parameters->get(self::P_SOURCE_REPEAT)) {
@@ -674,7 +674,7 @@ class CommonProvider
 
     public function strategyUpdateEntityIndexDecorator(
         UpdateEntityInterface $strategy,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): ?IndexRepeatDecorator {
         return new IndexRepeatDecorator($strategy, $events);
     }
@@ -712,7 +712,7 @@ class CommonProvider
         IndexLazyManager $index,
         ViewLazyManager $view,
         TransactionLazyManager $transaction,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): RemoveEntityStrategy {
         return new RemoveEntityStrategy($index, $view, $transaction, $events);
     }
@@ -755,7 +755,7 @@ class CommonProvider
         BusLazyManager $bus,
         SourceLazyManager $source,
         SchedulerLazyManager $scheduler,
-        EventLazyManager $events,
+        DispatcherLazyManager $events,
         TransactionLazyManager $transaction
     ): WaitingForActionStrategy {
         return new WaitingForActionStrategy($bus, $source, $scheduler, $events, $transaction);
@@ -770,7 +770,7 @@ class CommonProvider
 
     public function strategyCheckEntitySourceDecorator(
         CheckEntityInterface $strategy,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): ?CheckEntityInterface {
         return new SourceIgnoreDecorator($strategy, $events);
     }
@@ -779,7 +779,7 @@ class CommonProvider
         SourceLazyManager $source,
         IndexLazyManager $index,
         SchedulerLazyManager $scheduler,
-        EventLazyManager $events,
+        DispatcherLazyManager $events,
         TransactionLazyManager $transaction,
         SchedulerFactoryInterface $factory
     ): CheckEntityStrategy {
@@ -795,7 +795,7 @@ class CommonProvider
         ReceiveViewsInterface $receiveViews,
         WaitingForActionInterface $waiting,
         CheckEntityInterface $check,
-        EventLazyManager $events
+        DispatcherLazyManager $events
     ): MonolithFacade {
         $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
 
@@ -811,7 +811,7 @@ class CommonProvider
         ReceiveViewsInterface $receiveViews,
         WaitingForActionInterface $waiting,
         CheckEntityInterface $check,
-        EventLazyManager $events,
+        DispatcherLazyManager $events,
         BusLazyManager $bus
     ): BackendFacade {
         $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;

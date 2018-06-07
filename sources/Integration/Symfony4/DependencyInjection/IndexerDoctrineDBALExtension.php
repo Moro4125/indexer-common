@@ -5,7 +5,7 @@ namespace Moro\Indexer\Common\Integration\Symfony4\DependencyInjection;
 use Doctrine\DBAL\Connection;
 use Moro\Indexer\Common\Bus\Adapter\DoctrineDBALAdapter as BusAdapter;
 use Moro\Indexer\Common\Bus\AdapterInterface as BusAdapterInterface;
-use Moro\Indexer\Common\Event\Manager\LazyManager as EventLazyManager;
+use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Index\Storage\DoctrineDBALStorage as IndexStorage;
 use Moro\Indexer\Common\Index\StorageInterface as IndexStorageInterface;
 use Moro\Indexer\Common\Scheduler\Storage\Decorator\DoctrineRepeatDecorator as SchedulerRepeatDecorator;
@@ -80,17 +80,17 @@ class IndexerDoctrineDBALExtension extends Extension implements CompilerPassInte
         $container->register(UpdateRepeatDecorator::class)
             ->setDecoratedService(UpdateEntityInterface::class, UpdateRepeatDecorator::class . '.inner', 13)
             ->addArgument(new Reference(UpdateRepeatDecorator::class . '.inner'))
-            ->addArgument(new Reference(EventLazyManager::class));
+            ->addArgument(new Reference(DispatcherLazyManager::class));
 
         $container->register(RemoveRepeatDecorator::class)
             ->setDecoratedService(RemoveEntityInterface::class, RemoveRepeatDecorator::class . '.inner')
             ->addArgument(new Reference(RemoveRepeatDecorator::class . '.inner'))
-            ->addArgument(new Reference(EventLazyManager::class));
+            ->addArgument(new Reference(DispatcherLazyManager::class));
 
         $container->register(CheckIgnoreDecorator::class)
             ->setDecoratedService(CheckEntityInterface::class, CheckIgnoreDecorator::class . '.inner')
             ->addArgument(new Reference(CheckIgnoreDecorator::class . '.inner'))
-            ->addArgument(new Reference(EventLazyManager::class));
+            ->addArgument(new Reference(DispatcherLazyManager::class));
 
         // Storage decorators.
 

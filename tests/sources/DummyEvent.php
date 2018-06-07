@@ -2,7 +2,7 @@
 
 namespace Moro\Indexer\Test;
 
-use Moro\Indexer\Common\Event\Event\AbstractEvent;
+use Moro\Indexer\Common\Dispatcher\Event\AbstractEvent;
 
 /**
  * Class DummyEvent

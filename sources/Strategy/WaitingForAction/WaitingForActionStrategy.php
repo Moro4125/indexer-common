@@ -3,10 +3,10 @@
 namespace Moro\Indexer\Common\Strategy\WaitingForAction;
 
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManager;
-use Moro\Indexer\Common\Event\Event\MessageIsDerivedEvent;
-use Moro\Indexer\Common\Event\Event\SchedulerDeriveEvent;
-use Moro\Indexer\Common\Event\Event\WaitRandomTickEvent;
-use Moro\Indexer\Common\Event\ManagerInterface as EventManager;
+use Moro\Indexer\Common\Dispatcher\Event\MessageIsDerivedEvent;
+use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
+use Moro\Indexer\Common\Dispatcher\Event\WaitRandomTickEvent;
+use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Scheduler\EntryInterface;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManager;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;

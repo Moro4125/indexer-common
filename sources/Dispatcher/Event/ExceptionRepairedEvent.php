@@ -1,12 +1,12 @@
 <?php
 
-namespace Moro\Indexer\Common\Event\Event;
+namespace Moro\Indexer\Common\Dispatcher\Event;
 
 use Throwable;
 
 /**
  * Class ExceptionRepairedEvent
- * @package Moro\Indexer\Common\Event\Event
+ * @package Moro\Indexer\Common\Dispatcher\Event
  */
 class ExceptionRepairedEvent extends AbstractEvent
 {
