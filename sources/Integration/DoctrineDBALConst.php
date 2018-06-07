@@ -18,6 +18,11 @@ interface DoctrineDBALConst
     const COL_BUS_LOCKED_AT  = 'locked_at';
     const COL_BUS_LOCKED_BY  = 'locked_by';
 
+    const TABLE_INDEX_TYPE = 'indexer_index_type';
+
+    const COL_INDEX_TYPE_ID   = 'id';
+    const COL_INDEX_TYPE_NAME = 'name';
+
     const TABLE_INDEX_LIST = 'indexer_index_list';
 
     const COL_INDEX_LIST_ID      = 'id';

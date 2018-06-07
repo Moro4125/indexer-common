@@ -2,4 +2,6 @@
 composer.lock
 composer.phar
 tests/_data/infection-log.txt
+tests/_output/failed
 vendor/
+*.zip

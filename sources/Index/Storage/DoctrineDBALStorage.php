@@ -7,6 +7,7 @@ use Doctrine\DBAL\FetchMode;
 use Moro\Indexer\Common\Index\StorageInterface;
 use Moro\Indexer\Common\Integration\DoctrineDBALConst;
 use Moro\Indexer\Common\Transaction\Facade\DoctrineDBALFacade;
+use Throwable;
 
 /**
  * Class DoctrineDBALStorage
@@ -20,11 +21,103 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
     protected $_facade;
 
     /**
+     * @var array
+     */
+    protected $_typesMap1;
+
+    /**
+     * @var array
+     */
+    protected $_typesMap2;
+
+    /**
      * @param DoctrineDBALFacade $facade
      */
     public function __construct(DoctrineDBALFacade $facade)
     {
         $this->_facade = $facade;
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function loadTypeMapping()
+    {
+        $select = $this->_facade->statement(__METHOD__, function (Connection $connection) {
+            $select = $connection->createQueryBuilder()
+                ->select(self::COL_INDEX_TYPE_ID, self::COL_INDEX_TYPE_NAME)
+                ->from(self::TABLE_INDEX_TYPE);
+
+            return $select->getSQL();
+        });
+
+        $this->_typesMap1 = [];
+        $this->_typesMap2 = [];
+
+        foreach ($select->execute() ? $select->fetchAll() : [] as $record) {
+            $this->_typesMap1[$record[self::COL_INDEX_TYPE_NAME]] = (int)$record[self::COL_INDEX_TYPE_ID];
+            $this->_typesMap2[(int)$record[self::COL_INDEX_TYPE_ID]] = $record[self::COL_INDEX_TYPE_NAME];
+        }
+    }
+
+    /**
+     * @param string $type
+     * @return int
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getTypeId(string $type): int
+    {
+        if ($this->_typesMap1 === null) {
+            $this->loadTypeMapping();
+        }
+
+        if (empty($this->_typesMap1[$type])) {
+            $this->_typesMap1[$type] = $this->newTypeId($type);
+            $this->_typesMap2[$this->_typesMap1[$type]] = $type;
+        }
+
+        return $this->_typesMap1[$type];
+    }
+
+    /**
+     * @param string $type
+     * @return int
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function newTypeId(string $type): int
+    {
+        $insert = $this->_facade->statement(__METHOD__, function (Connection $connection) {
+            $insert = $connection->createQueryBuilder()
+                ->insert(self::TABLE_INDEX_TYPE)
+                ->values([self::COL_INDEX_TYPE_NAME => '?']);
+
+            return $insert->getSQL();
+        });
+
+        try {
+            $insert->execute([$type]);
+        } catch (Throwable $exception) {
+            $this->_typesMap1 = null;
+            $this->_typesMap2 = null;
+
+            return $this->getTypeId($type);
+        }
+
+        return (int)$this->_facade->getLastInsertId();
+    }
+
+    /**
+     * @param int|null $id
+     * @return string|null
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getTypeById(?int $id): ?string
+    {
+        if ($this->_typesMap2 === null) {
+            $this->loadTypeMapping();
+        }
+
+        return $id ? ($this->_typesMap2[$id] ?? null) : null;
     }
 
     /**
@@ -76,12 +169,12 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
     public function addIndex(string $alias, string $type): int
     {
         $this->_normalizeString($alias);
-        $this->_normalizeString($type);
+        $typeId = $this->getTypeId($type);
         $this->_facade->activate();
 
         $record = [
             self::COL_INDEX_LIST_NAME    => $alias,
-            self::COL_INDEX_LIST_TYPE_ID => $type,
+            self::COL_INDEX_LIST_TYPE_ID => $typeId,
         ];
 
         $insert = $this->_facade->statement(__METHOD__, function (Connection $connection) use ($record) {
@@ -103,7 +196,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      */
     public function findIndexes(string $type, string $id = null): array
     {
-        $this->_normalizeString($type);
+        $typeId = $this->getTypeId($type);
         $this->_normalizeString($id);
 
         $parameters = [];
@@ -125,7 +218,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
             return $connection->prepare($select->getSQL());
         });
 
-        $parameters[] = $type;
+        $parameters[] = $typeId;
 
         if (isset($id)) {
             $parameters[] = $id;
@@ -184,7 +277,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
             return $connection->prepare($select->getSQL());
         });
 
-        return $select->execute([$alias]) ? $select->fetchColumn() ?: null : null;
+        return $this->getTypeById($select->execute([$alias]) ? $select->fetchColumn() ?: null : null);
     }
 
     /**

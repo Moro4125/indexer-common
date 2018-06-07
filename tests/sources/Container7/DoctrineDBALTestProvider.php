@@ -111,11 +111,18 @@ class DoctrineDBALTestProvider
         $table->addColumn(DoctrineDBALConst::COL_BUS_LOCKED_AT, Type::INTEGER)->setNotnull(false);
         $table->addColumn(DoctrineDBALConst::COL_BUS_CREATED_AT, Type::INTEGER);
 
+        $table = $schema->createTable(DoctrineDBALConst::TABLE_INDEX_TYPE);
+        $table->addColumn(DoctrineDBALConst::COL_INDEX_TYPE_ID, Type::INTEGER)
+            ->setAutoincrement(true);
+        $table->addColumn(DoctrineDBALConst::COL_INDEX_TYPE_NAME, Type::STRING);
+        $table->setPrimaryKey([DoctrineDBALConst::COL_INDEX_TYPE_ID]);
+        $table->addUniqueIndex([DoctrineDBALConst::COL_INDEX_TYPE_NAME]);
+
         $table = $schema->createTable(DoctrineDBALConst::TABLE_INDEX_LIST);
         $table->addColumn(DoctrineDBALConst::COL_INDEX_LIST_ID, Type::INTEGER)
             ->setAutoincrement(true);
         $table->addColumn(DoctrineDBALConst::COL_INDEX_LIST_NAME, Type::STRING);
-        $table->addColumn(DoctrineDBALConst::COL_INDEX_LIST_TYPE_ID, Type::STRING);
+        $table->addColumn(DoctrineDBALConst::COL_INDEX_LIST_TYPE_ID, Type::INTEGER);
         $table->setPrimaryKey([DoctrineDBALConst::COL_INDEX_LIST_ID]);
 
         $table = $schema->createTable(DoctrineDBALConst::TABLE_INDEX_DATA);
