@@ -9,6 +9,18 @@ namespace Moro\Indexer\Common\Index;
 interface StorageInterface
 {
     /**
+     * @param string $type
+     * @return int
+     */
+    function lockType(string $type): int;
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    function freeType(int $key): StorageInterface;
+
+    /**
      * @param int $index
      * @return null|string
      */

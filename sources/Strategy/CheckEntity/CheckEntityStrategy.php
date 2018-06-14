@@ -70,55 +70,61 @@ class CheckEntityStrategy implements CheckEntityInterface
      */
     public function check(string $type)
     {
-        if (!$this->_index->hasIndex($type . ':catalog')) {
+        if (!$this->_index->hasIndex($type . ':catalog') || !$lock = $this->_index->lockType($type)) {
             return;
         }
 
-        $list = $this->_index->select($type . ':catalog', 0, null, true);
+        try {
+            $list = $this->_index->select($type . ':catalog', 0, null, true);
 
-        $entitiesLimit = $this->_updateLimit;
-        $limit = $this->_receiveLimit;
-        $step = 0;
+            $entitiesLimit = $this->_updateLimit;
+            $limit = $this->_receiveLimit;
+            $step = 0;
 
-        while ($entitiesLimit && $idList = $this->_source->getIdList($type, $step * $limit, $limit)) {
-            $this->_checkOldestRecord($list, $type);
-            $step++;
+            while ($entitiesLimit && $idList = $this->_source->getIdList($type, $step * $limit, $limit)) {
+                $this->_checkOldestRecord($list, $type);
+                $step++;
 
-            $this->_transaction->execute(function () use ($type, $idList, &$list, &$entitiesLimit) {
-                foreach ($idList as $id => $updatedAt) {
-                    $updated = (new DateTime($updatedAt))->getTimestamp();
+                $this->_transaction->execute(function () use ($type, $idList, &$list, &$entitiesLimit) {
+                    foreach ($idList as $id => $updatedAt) {
+                        $updated = (new DateTime($updatedAt))->getTimestamp();
 
-                    if (empty($list[$id]) || (new DateTime($list[$id]))->getTimestamp() < $updated) {
-                        $entitiesLimit--;
+                        if (empty($list[$id]) || (new DateTime($list[$id]))->getTimestamp() < $updated) {
+                            $entitiesLimit--;
 
-                        $entry = $this->_factory->newEntry();
-                        $entry->setAction('update');
-                        $entry->setType($type);
-                        $entry->setId($id);
+                            $entry = $this->_factory->newEntry();
+                            $entry->setAction('update');
+                            $entry->setType($type);
+                            $entry->setId($id);
 
-                        $timestamp = floor(time() / $this->_receiveLimit) * $this->_receiveLimit;
-                        $this->_scheduler->defer($timestamp, $entry);
+                            $timestamp = floor(time() / $this->_receiveLimit) * $this->_receiveLimit;
+                            $this->_scheduler->defer($timestamp, $entry);
+                        }
+
+                        unset($list[$id]);
+
+                        if (!$entitiesLimit) {
+                            return;
+                        }
                     }
+                });
+            }
 
-                    unset($list[$id]);
+            while ($entitiesLimit && reset($list) && $id = key($list)) {
+                $entitiesLimit--;
+                array_shift($list);
 
-                    if (!$entitiesLimit) {
-                        return;
-                    }
-                }
-            });
+                $entry = $this->_factory->newEntry();
+                $entry->setAction('remove');
+                $entry->setType($type);
+                $entry->setId($id);
+
+                $timestamp = floor(time() / $this->_receiveLimit) * $this->_receiveLimit;
+                $this->_scheduler->defer($timestamp, $entry);
+            }
         }
-
-        while ($entitiesLimit && reset($list) && $id = key($list)) {
-            $entitiesLimit--;
-            array_shift($list);
-
-            $entry = $this->_factory->newEntry();
-            $entry->setAction('remove');
-            $entry->setType($type);
-            $entry->setId($id);
-
-            $this->_scheduler->defer(time(), $entry);
+        finally {
+            $this->_index->freeType($lock);
         }
     }
 

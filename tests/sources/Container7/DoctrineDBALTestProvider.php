@@ -115,6 +115,8 @@ class DoctrineDBALTestProvider
         $table->addColumn(DoctrineDBALConst::COL_INDEX_TYPE_ID, Type::INTEGER)
             ->setAutoincrement(true);
         $table->addColumn(DoctrineDBALConst::COL_INDEX_TYPE_NAME, Type::STRING);
+        $table->addColumn(DoctrineDBALConst::COL_INDEX_TYPE_UPDATED_AT, Type::INTEGER);
+        $table->addColumn(DoctrineDBALConst::COL_INDEX_TYPE_LOCKED_BY, Type::INTEGER)->setNotnull(false);
         $table->setPrimaryKey([DoctrineDBALConst::COL_INDEX_TYPE_ID]);
         $table->addUniqueIndex([DoctrineDBALConst::COL_INDEX_TYPE_NAME]);
 
@@ -130,6 +132,7 @@ class DoctrineDBALTestProvider
         $table->addColumn(DoctrineDBALConst::COL_INDEX_DATA_ENTITY_ID, Type::STRING);
         $table->addColumn(DoctrineDBALConst::COL_INDEX_DATA_ORDER, Type::STRING);
         $table->addColumn(DoctrineDBALConst::COL_INDEX_DATA_UPDATED_AT, Type::STRING);
+        $table->addColumn(DoctrineDBALConst::COL_INDEX_DATA_VERSION, Type::INTEGER);
 
         $table = $schema->createTable(DoctrineDBALConst::TABLE_SCHEDULER);
         $table->addColumn(DoctrineDBALConst::COL_SCHEDULER_TYPE_ID, Type::STRING);
@@ -143,6 +146,7 @@ class DoctrineDBALTestProvider
         $table->addColumn(DoctrineDBALConst::COL_VIEW_KIND_ID, Type::STRING);
         $table->addColumn(DoctrineDBALConst::COL_VIEW_CONTENT, Type::STRING);
         $table->addColumn(DoctrineDBALConst::COL_VIEW_UPDATED_AT, Type::STRING);
+        $table->addColumn(DoctrineDBALConst::COL_VIEW_VERSION, Type::INTEGER);
 
         $table = $schema->createTable(self::SIMPLE);
         $table->addColumn('id', Type::INTEGER)

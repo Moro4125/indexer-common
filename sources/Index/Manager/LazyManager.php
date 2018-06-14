@@ -42,6 +42,28 @@ class LazyManager implements ManagerInterface
     }
 
     /**
+     * @param string $type
+     * @return int
+     */
+    public function lockType(string $type): int
+    {
+        return $this->_getManager()
+            ->lockType($type);
+    }
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    public function freeType(int $key): ManagerInterface
+    {
+        $this->_getManager()
+            ->freeType($key);
+
+        return $this;
+    }
+
+    /**
      * @param string $alias
      * @return bool
      */

@@ -13,6 +13,25 @@ class MemoryStorage implements StorageInterface
     protected $_indexes = [null];
     protected $_aliases = [];
     protected $_types   = [];
+    protected $_locks   = [];
+
+    /**
+     * @param string $type
+     * @return int
+     */
+    public function lockType(string $type): int
+    {
+        return 1;
+    }
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    public function freeType(int $key): StorageInterface
+    {
+        return $this;
+    }
 
     /**
      * @param int $index

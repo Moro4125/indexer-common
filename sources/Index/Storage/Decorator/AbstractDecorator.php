@@ -13,6 +13,28 @@ abstract class AbstractDecorator implements StorageInterface, DecoratorInterface
 {
     protected $_instance;
 
+    /**
+     * @param string $type
+     * @return int
+     */
+    public function lockType(string $type): int
+    {
+        return $this->getDecoratedInstance()
+            ->lockType($type);
+    }
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    public function freeType(int $key): StorageInterface
+    {
+        $this->getDecoratedInstance()
+            ->freeType($key);
+
+        return $this;
+    }
+
     public function hasAlias(int $index): ?string
     {
         return $this->getDecoratedInstance()

@@ -2,6 +2,7 @@
 
 namespace Moro\Indexer\Common\Dispatcher\Middleware;
 
+use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
 use Moro\Indexer\Common\Dispatcher\Event\SchedulerDeriveEvent;
 use Moro\Indexer\Common\Dispatcher\EventInterface;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherInterface;
@@ -45,19 +46,18 @@ class SchedulerMiddleware implements MiddlewareInterface
         $entry = clone $event->getEntry();
 
         try {
-            try {
-                $next();
-            } catch (NotFoundException $exception) {
-                if ($entry->getAction() == 'update') {
-                    $entry->setAction('remove');
+            $next();
+        } catch (NotFoundException $exception) {
+            if ($entry->getAction() == 'update') {
+                $entry->setAction('remove');
 
-                    $event = new SchedulerDeriveEvent($entry, time());
+                $timestamp = ceil(time() / 60) * 60;
 
-                    $this->_eventManager->init();
-                    $this->_eventManager->trigger($event);
-                } else {
-                    throw $exception;
-                }
+                $this->_eventManager->init();
+                $this->_schedulerManager->defer($timestamp, $entry);
+                $this->_eventManager->trigger(new ExceptionRepairedEvent($exception, static::class));
+            } else {
+                throw $exception;
             }
         } catch (Throwable $exception) {
             $timestamp = ceil(time() / 60) * 60;

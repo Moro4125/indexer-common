@@ -27,6 +27,30 @@ class IndexManager implements ManagerInterface
     }
 
     /**
+     * @param string $type
+     * @return int
+     */
+    public function lockType(string $type): int
+    {
+        assert($this->_storage !== null);
+
+        return $this->_storage->lockType($type);
+    }
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    public function freeType(int $key): ManagerInterface
+    {
+        assert($this->_storage !== null);
+
+        $this->_storage->freeType($key);
+
+        return $this;
+    }
+
+    /**
      * @param string $alias
      * @return bool
      */

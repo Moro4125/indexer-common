@@ -89,13 +89,13 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
         $insert = $this->_facade->statement(__METHOD__, function (Connection $connection) {
             $insert = $connection->createQueryBuilder()
                 ->insert(self::TABLE_INDEX_TYPE)
-                ->values([self::COL_INDEX_TYPE_NAME => '?']);
+                ->values([self::COL_INDEX_TYPE_NAME => '?', self::COL_INDEX_TYPE_UPDATED_AT => '?']);
 
             return $insert->getSQL();
         });
 
         try {
-            $insert->execute([$type]);
+            $insert->execute([$type, time()]);
         } catch (Throwable $exception) {
             $this->_typesMap1 = null;
             $this->_typesMap2 = null;
@@ -118,6 +118,82 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
         }
 
         return $id ? ($this->_typesMap2[$id] ?? null) : null;
+    }
+
+    /**
+     * @param string $type
+     * @return int
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function lockType(string $type): int
+    {
+        $typeId = $this->getTypeId($type);
+        $pid = max(1, @getmypid());
+
+        $update = $this->_facade->statement(__METHOD__, function (Connection $connection) {
+            $update = $connection->createQueryBuilder()
+                ->update(self::TABLE_INDEX_TYPE)
+                ->set(self::COL_INDEX_TYPE_UPDATED_AT, '?')
+                ->set(self::COL_INDEX_TYPE_LOCKED_BY, '?')
+                ->where(self::COL_INDEX_TYPE_LOCKED_BY . ' IS NULL')
+                ->orWhere(self::COL_INDEX_TYPE_LOCKED_BY . '=?')
+                ->andWhere(self::COL_INDEX_TYPE_ID . '=?');
+
+            $sql = $update->getSQL();
+            return $sql;
+        });
+
+        if ($update->execute([time(), $pid, $pid, $typeId]) && $update->rowCount()) {
+            return $pid;
+        }
+
+        $this->checkType($typeId);
+
+        return 0;
+    }
+
+    /**
+     * @param int $id
+     * @return StorageInterface
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function checkType(int $id): StorageInterface
+    {
+        $update = $this->_facade->statement(__METHOD__, function (Connection $connection) {
+            $update = $connection->createQueryBuilder()
+                ->update(self::TABLE_INDEX_TYPE)
+                ->set(self::COL_INDEX_TYPE_LOCKED_BY, '?')
+                ->where(self::COL_INDEX_TYPE_UPDATED_AT . '<?')
+                ->andWhere(self::COL_INDEX_TYPE_ID . '=?');
+
+            return $update->getSQL();
+        });
+
+        $update->execute([null, time() - 60, $id]);
+
+        return $this;
+    }
+
+    /**
+     * @param int $key
+     * @return $this
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function freeType(int $key): StorageInterface
+    {
+        $update = $this->_facade->statement(__METHOD__, function (Connection $connection) {
+            $update = $connection->createQueryBuilder()
+                ->update(self::TABLE_INDEX_TYPE)
+                ->set(self::COL_INDEX_TYPE_UPDATED_AT, '?')
+                ->set(self::COL_INDEX_TYPE_LOCKED_BY, '?')
+                ->where(self::COL_INDEX_TYPE_LOCKED_BY . '=?');
+
+            return $update->getSQL();
+        });
+
+        $update->execute([time(), null, $key]);
+
+        return $this;
     }
 
     /**
@@ -299,6 +375,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
                 ->update(self::TABLE_INDEX_DATA)
                 ->set(self::COL_INDEX_DATA_ORDER, '?')
                 ->set(self::COL_INDEX_DATA_UPDATED_AT, '?')
+                ->set(self::COL_INDEX_DATA_VERSION, self::COL_INDEX_DATA_VERSION . ' + 1')
                 ->where(self::COL_INDEX_DATA_INDEX_ID . '=?')
                 ->andWhere(self::COL_INDEX_DATA_ENTITY_ID . '=?');
 
@@ -311,6 +388,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
                 self::COL_INDEX_DATA_ENTITY_ID  => $id,
                 self::COL_INDEX_DATA_ORDER      => $order,
                 self::COL_INDEX_DATA_UPDATED_AT => time(),
+                self::COL_INDEX_DATA_VERSION    => 1,
             ];
 
             $insert = $driver->statement(__METHOD__ . __LINE__, function (Connection $connection) use ($record) {

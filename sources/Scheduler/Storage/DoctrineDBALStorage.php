@@ -54,7 +54,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function _deferRecordExists(array $record): bool
+    protected function _deferRecordExists(array $record): bool
     {
         $select = $this->_facade->statement(__METHOD__, function (Connection $connection) use ($record) {
             $select = $connection->createQueryBuilder()
@@ -79,7 +79,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      * @param array $record
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function _deferInsertRecord(array $record)
+    protected function _deferInsertRecord(array $record)
     {
         $insert = $this->_facade->statement(__METHOD__, function (Connection $connection) use ($record) {
             $insert = $connection->createQueryBuilder()
@@ -100,6 +100,8 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
     public function derive(EntryInterface $entry): bool
     {
         if (($record = $this->_derivedEntryExists()) && $record[self::COL_SCHEDULER_ORDER] <= time()) {
+            $this->_facade->activate();
+
             if ($this->_derivedEntryLocked($record)) {
                 $entry->setAction($record[self::COL_SCHEDULER_ACTION]);
                 $entry->setType($record[self::COL_SCHEDULER_TYPE_ID]);
@@ -116,7 +118,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      * @return array|null
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function _derivedEntryExists(): ?array
+    protected function _derivedEntryExists(): ?array
     {
         $result = null;
         $parameters = $this->_deriveBuilderSelectParameters();
@@ -129,8 +131,6 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
             return null;
         }
 
-        $this->_facade->activate();
-
         return $result;
     }
 
@@ -138,7 +138,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      * @param Connection $connection
      * @return QueryBuilder
      */
-    private function _deriveCreateSelect(Connection $connection): QueryBuilder
+    protected function _deriveCreateSelect(Connection $connection): QueryBuilder
     {
         $select = $connection->createQueryBuilder()
             ->select('*')
@@ -152,7 +152,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
     /**
      * @return array
      */
-    private function _deriveBuilderSelectParameters(): array
+    protected function _deriveBuilderSelectParameters(): array
     {
         $parameters = [];
 
@@ -164,7 +164,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function _derivedEntryLocked(array $record): bool
+    protected function _derivedEntryLocked(array $record): bool
     {
         $parameters = $this->_deriveBuilderDeleteParameters($record);
         $update = $this->_facade->statement(__METHOD__, function (Connection $connection) {
@@ -179,7 +179,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
      * @param Connection $connection
      * @return QueryBuilder
      */
-    private function _deriveCreateDelete(Connection $connection): QueryBuilder
+    protected function _deriveCreateDelete(Connection $connection): QueryBuilder
     {
         $update = $connection->createQueryBuilder()
             ->delete(self::TABLE_SCHEDULER);
@@ -193,11 +193,10 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
     }
 
     /**
-     * @param $isUpdate
      * @param $record
      * @return array
      */
-    private function _deriveBuilderDeleteParameters(array $record = null): array
+    protected function _deriveBuilderDeleteParameters(array $record = null): array
     {
         $parameters = [];
 

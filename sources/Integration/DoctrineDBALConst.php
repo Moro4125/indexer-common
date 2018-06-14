@@ -20,8 +20,10 @@ interface DoctrineDBALConst
 
     const TABLE_INDEX_TYPE = 'indexer_index_type';
 
-    const COL_INDEX_TYPE_ID   = 'id';
-    const COL_INDEX_TYPE_NAME = 'name';
+    const COL_INDEX_TYPE_ID         = 'id';
+    const COL_INDEX_TYPE_NAME       = 'name';
+    const COL_INDEX_TYPE_UPDATED_AT = 'updated_at';
+    const COL_INDEX_TYPE_LOCKED_BY  = 'locked_by';
 
     const TABLE_INDEX_LIST = 'indexer_index_list';
 
@@ -35,6 +37,7 @@ interface DoctrineDBALConst
     const COL_INDEX_DATA_ENTITY_ID  = 'entity_id';
     const COL_INDEX_DATA_ORDER      = 'the_order';
     const COL_INDEX_DATA_UPDATED_AT = 'updated_at';
+    const COL_INDEX_DATA_VERSION    = 'version';
 
     const TABLE_SCHEDULER = 'indexer_scheduler';
 
@@ -50,4 +53,5 @@ interface DoctrineDBALConst
     const COL_VIEW_ENTITY_ID  = 'entity_id';
     const COL_VIEW_CONTENT    = 'content';
     const COL_VIEW_UPDATED_AT = 'updated_at';
+    const COL_VIEW_VERSION    = 'version';
 }

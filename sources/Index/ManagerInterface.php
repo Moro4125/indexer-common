@@ -17,6 +17,18 @@ interface ManagerInterface
     function setStorage(StorageInterface $storage): ManagerInterface;
 
     /**
+     * @param string $type
+     * @return int
+     */
+    function lockType(string $type): int;
+
+    /**
+     * @param int $key
+     * @return $this
+     */
+    function freeType(int $key): ManagerInterface;
+
+    /**
      * @param string $alias
      * @return bool
      */

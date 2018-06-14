@@ -72,6 +72,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
                 ->update(self::TABLE_VIEW)
                 ->set(self::COL_VIEW_CONTENT, '?')
                 ->set(self::COL_VIEW_UPDATED_AT, '?')
+                ->set(self::COL_VIEW_VERSION, self::COL_VIEW_VERSION . '+1')
                 ->where(self::COL_VIEW_TYPE_ID . '=?')
                 ->andWhere(self::COL_VIEW_KIND_ID . '=?')
                 ->andWhere(self::COL_VIEW_ENTITY_ID . '=?');
@@ -86,6 +87,7 @@ class DoctrineDBALStorage implements StorageInterface, DoctrineDBALConst
                 self::COL_VIEW_ENTITY_ID  => $id,
                 self::COL_VIEW_CONTENT    => $content,
                 self::COL_VIEW_UPDATED_AT => time(),
+                self::COL_VIEW_VERSION    => 1,
             ];
 
             $insert = $driver->statement(__METHOD__ . __LINE__, function (Connection $connection) use ($record) {
