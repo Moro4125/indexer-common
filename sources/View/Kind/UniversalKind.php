@@ -74,6 +74,7 @@ class UniversalKind implements KindInterface
     public function handle(EntityInterface $entity): string
     {
         $parameters = [];
+        $broken = false;
 
         foreach ($this->_parameters ?? [] as list($name, $path)) {
             $flag = $this->_getFlagForPath($path);
@@ -81,7 +82,22 @@ class UniversalKind implements KindInterface
             $parameters = $this->_setByPath($name, $value, $parameters, $flag);
         }
 
-        return ($this->_render && $this->_template) ? $this->_render->render($this->_template,
-            $parameters) : json_encode($parameters, JSON_UNESCAPED_UNICODE);
+        if ($this->_render && $this->_template) {
+            return $this->_render->render($this->_template, $parameters);
+        }
+
+        array_walk_recursive($parameters, function (&$value) use (&$broken) {
+            if (is_string($value)) {
+                $stripped = iconv('UTF-8', 'UTF-8//IGNORE', $value);
+                $broken |= ($stripped !== $value);
+                $value = $stripped;
+            }
+        });
+
+        if ($broken) {
+            $parameters['broken'] = true;
+        }
+
+        return (string)json_encode($parameters, JSON_UNESCAPED_UNICODE);
     }
 }
