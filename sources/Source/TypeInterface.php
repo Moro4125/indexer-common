@@ -35,7 +35,7 @@ interface TypeInterface extends BaseInterface
      * @param FactoryInterface $factory
      * @return $this
      */
-    function setEntityFactory(FactoryInterface $factory);
+    function setFactory(FactoryInterface $factory);
 
     /**
      * @param int $from

@@ -420,7 +420,7 @@ class CommonProvider
             ->with($code);
 
         foreach ($collection as $factory) {
-            $type->setEntityFactory($factory);
+            $type->setFactory($factory);
         }
 
         $type->setAdapter($this->_findNearestService($container, AdapterInterface::class, $code));
@@ -480,7 +480,7 @@ class CommonProvider
             ->with($code);
 
         foreach ($collection as $factory) {
-            $type->setResultFactory($factory);
+            $type->setFactory($factory);
         }
     }
 

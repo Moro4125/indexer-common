@@ -51,7 +51,7 @@ class SourceTest extends \PHPUnit\Framework\TestCase
 
         $type = new SourceType();
         $type->setAdapter($this->_initMemoryAdapter());
-        $type->setEntityFactory($factory);
+        $type->setFactory($factory);
         $type->setCode(self::SIMPLE);
 
         return $type;
@@ -123,7 +123,7 @@ class SourceTest extends \PHPUnit\Framework\TestCase
             verify($type->addNormalizer(new DummyNormalizer()))->same($type);
         });
 
-        $this->specify('Test methods "setEntityFactory".', function () use ($type) {
+        $this->specify('Test methods "setFactory".', function () use ($type) {
             $factory = new ClassFactory();
             $factory->setEntityClass(SimpleEntity::class);
 
@@ -209,7 +209,7 @@ class SourceTest extends \PHPUnit\Framework\TestCase
         $factory->setEntityClass(SimpleEntity::class);
 
         $type = new SourceType();
-        $type->setEntityFactory($factory);
+        $type->setFactory($factory);
         $type->setAdapter($this->_initMemoryAdapter());
         $type->setCode('second type');
 

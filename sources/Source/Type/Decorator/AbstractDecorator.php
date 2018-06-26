@@ -65,10 +65,10 @@ abstract class AbstractDecorator implements TypeInterface, DecoratorInterface
      * @param FactoryInterface $factory
      * @return $this|TypeInterface
      */
-    public function setEntityFactory(FactoryInterface $factory)
+    public function setFactory(FactoryInterface $factory)
     {
         $this->getDecoratedInstance()
-            ->setEntityFactory($factory);
+            ->setFactory($factory);
 
         return $this;
     }

@@ -41,6 +41,6 @@ class TypeConfigurator implements ConfiguratorInterface
             $type->addNormalizer($normalizer);
         }
 
-        $type->setEntityFactory($this->_factory);
+        $type->setFactory($this->_factory);
     }
 }

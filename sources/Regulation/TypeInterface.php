@@ -22,7 +22,7 @@ interface TypeInterface extends BaseInterface
      * @param FactoryInterface $factory
      * @return TypeInterface
      */
-    function setResultFactory(FactoryInterface $factory): TypeInterface;
+    function setFactory(FactoryInterface $factory): TypeInterface;
 
     /**
      * @param InstructionInterface $instruction

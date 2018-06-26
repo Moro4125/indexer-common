@@ -31,10 +31,10 @@ abstract class AbstractDecorator implements TypeInterface, DecoratorInterface
             ->getCode();
     }
 
-    public function setResultFactory(FactoryInterface $factory): TypeInterface
+    public function setFactory(FactoryInterface $factory): TypeInterface
     {
         $this->getDecoratedInstance()
-            ->setResultFactory($factory);
+            ->setFactory($factory);
 
         return $this;
     }

@@ -436,7 +436,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
 
             $code = $attributes['code'];
             $type = $container->getDefinition($id);
-            $type->addMethodCall('setResultFactory', [new Reference($code . ':' . RegulationFactoryInterface::class)]);
+            $type->addMethodCall('setFactory', [new Reference($code . ':' . RegulationFactoryInterface::class)]);
 
             foreach ($container->findTaggedServiceIds(InstructionInterface::class) as $serviceId => $attr) {
                 $attr = array_merge(...$attr);
@@ -457,7 +457,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
 
             $code = $attributes['code'];
             $type = $container->getDefinition($id);
-            $type->addMethodCall('setEntityFactory', [new Reference($code . ':' . SourceFactoryInterface::class)]);
+            $type->addMethodCall('setFactory', [new Reference($code . ':' . SourceFactoryInterface::class)]);
 
             foreach ($container->findTaggedServiceIds(NormalizerInterface::class) as $serviceId => $attr) {
                 $attr = array_merge(...$attr);

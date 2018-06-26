@@ -45,7 +45,7 @@ class RegulationType implements TypeInterface
      * @param FactoryInterface $factory
      * @return TypeInterface
      */
-    public function setResultFactory(FactoryInterface $factory): TypeInterface
+    public function setFactory(FactoryInterface $factory): TypeInterface
     {
         $this->_factory = $factory;
 

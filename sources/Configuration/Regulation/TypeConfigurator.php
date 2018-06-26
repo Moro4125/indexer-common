@@ -29,7 +29,7 @@ class TypeConfigurator implements ConfiguratorInterface
     public function apply(ConfigurationInterface $configuration, $type)
     {
         $context = $configuration->getContext();
-        $type->setResultFactory($this->_factory);
+        $type->setFactory($this->_factory);
 
         foreach ($configuration->get('types/{code}/instructions|keys') ?? [] as $index) {
             $context['index'] = $index;

@@ -64,7 +64,7 @@ class SourceType implements TypeInterface
      * @param FactoryInterface $factory
      * @return $this
      */
-    public function setEntityFactory(FactoryInterface $factory)
+    public function setFactory(FactoryInterface $factory)
     {
         $this->_factory = $factory;
 

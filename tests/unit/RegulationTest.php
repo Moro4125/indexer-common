@@ -156,10 +156,10 @@ class RegulationTest extends \PHPUnit\Framework\TestCase
             verify($type->setCode(self::SIMPLE))->same($type);
         });
 
-        $this->specify('Call method "setResultFactory".', function () use ($type) {
+        $this->specify('Call method "setFactory".', function () use ($type) {
             $factory = new ClassFactory();
             $factory->setResultClass(RegulationResult::class);
-            verify($type->setResultFactory($factory))->same($type);
+            verify($type->setFactory($factory))->same($type);
         });
 
         $this->specify('Call method "addInstruction".', function () use ($type) {
@@ -214,7 +214,7 @@ class RegulationTest extends \PHPUnit\Framework\TestCase
 
         $type = new RegulationType();
         $type->setCode(self::SIMPLE);
-        $type->setResultFactory((new ClassFactory())->setResultClass(RegulationResult::class));
+        $type->setFactory((new ClassFactory())->setResultClass(RegulationResult::class));
         $type->addInstruction(new SimpleInstruction(['Echo'], ['first']));
         $type->addInstruction(new SimpleInstruction(['Echo', 'Sierra'], ['second']));
         $type->addInstruction(new SimpleInstruction(['Whiskey'], ['second', 'third']));
@@ -260,7 +260,7 @@ class RegulationTest extends \PHPUnit\Framework\TestCase
         $this->testRegulationManager($lazy);
 
         $type = new RegulationType();
-        $type->setResultFactory((new ClassFactory())->setResultClass(SimpleEntity::class));
+        $type->setFactory((new ClassFactory())->setResultClass(SimpleEntity::class));
         $type->addInstruction(new SimpleInstruction(['November'], ['none']));
         $type->setCode('second type');
 
