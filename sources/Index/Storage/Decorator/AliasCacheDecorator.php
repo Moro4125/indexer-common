@@ -40,7 +40,10 @@ class AliasCacheDecorator extends AbstractDecorator
         self::$_hasIndex[$alias] = null;
 
         $id = parent::addIndex($alias, $type);
-        self::$_hasAlias[$id] = null;
+
+        self::$_hasAlias[$id] = $alias;
+        self::$_typeByIndex[$alias] = $type;
+        self::$_hasIndex[$alias] = $id;
 
         return $id;
     }
