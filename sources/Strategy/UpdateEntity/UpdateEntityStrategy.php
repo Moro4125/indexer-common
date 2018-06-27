@@ -148,6 +148,12 @@ class UpdateEntityStrategy implements UpdateEntityInterface
                         $this->_indexManager->remove($alias, $id);
                         $this->_eventManager->trigger(new IndexUpdateEvent($alias));
                     };
+
+                    if ($this->_indexManager->select($alias, 0, 2, false) == [$id]) {
+                        $calls[] = function () use ($alias) {
+                            $this->_indexManager->dropIndex($alias);
+                        };
+                    }
                 }
             }
         }

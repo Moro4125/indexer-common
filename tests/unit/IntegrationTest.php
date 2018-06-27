@@ -180,7 +180,6 @@ class IntegrationTest extends \PHPUnit\Framework\TestCase
             $GLOBALS['stop'] = 1;
             verify($facade->receiveIds(self::INDEX_1))->same(['1']);
             verify($facade->receiveIds(self::INDEX_2))->same(['1', '2']);
-            //verify($facade->receiveIds(self::INDEX_3))->same(['2', '4', '5']);
             verify($facade->receiveIds(self::INDEX_3))->same(['5', '2', '4']);
         });
 

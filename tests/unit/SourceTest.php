@@ -127,7 +127,7 @@ class SourceTest extends \PHPUnit\Framework\TestCase
             $factory = new ClassFactory();
             $factory->setEntityClass(SimpleEntity::class);
 
-            verify($type->setEntityFactory($factory))->same($type);
+            verify($type->setFactory($factory))->same($type);
         });
 
         $this->specify('Check error for bad structure of entity record.', function () use ($type) {
