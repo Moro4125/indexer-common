@@ -56,7 +56,9 @@ use Moro\Indexer\Common\Strategy\CheckEntity\Decorator\SourceIgnoreDecorator;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Moro\Indexer\Common\Strategy\ReceiveIds\ReceiveIdsStrategy;
 use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
+use Moro\Indexer\Common\Strategy\ReceiveView\ReceiveViewStrategy;
 use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
+use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
 use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Strategy\RemoveEntity\Decorator\EntityCacheStrategy as EntityCacheRemoveStrategy;
 use Moro\Indexer\Common\Strategy\RemoveEntity\RemoveEntityStrategy;
@@ -123,6 +125,7 @@ class CommonProvider
     const P_STRATEGY_UPDATE_ENTITY_CLASS   = 'indexer/strategy/update-entity.class';
     const P_STRATEGY_REMOVE_ENTITY_CLASS   = 'indexer/strategy/remove-entity.class';
     const P_STRATEGY_RECEIVE_IDS_CLASS     = 'indexer/strategy/receive-ids.class';
+    const P_STRATEGY_RECEIVE_VIEW_CLASS    = 'indexer/strategy/receive-view.class';
     const P_STRATEGY_RECEIVE_VIEWS_CLASS   = 'indexer/strategy/receive-views.class';
     const P_STRATEGY_WAITING_ACTION_CLASS  = 'indexer/strategy/waiting-action.class';
     const P_STRATEGY_CHECK_ENTITY_CLASS    = 'indexer/strategy/check-entity.class';
@@ -166,6 +169,7 @@ class CommonProvider
             self::P_STRATEGY_UPDATE_ENTITY_CLASS   => UpdateEntityStrategy::class,
             self::P_STRATEGY_REMOVE_ENTITY_CLASS   => RemoveEntityStrategy::class,
             self::P_STRATEGY_RECEIVE_IDS_CLASS     => ReceiveIdsStrategy::class,
+            self::P_STRATEGY_RECEIVE_VIEW_CLASS    => ReceiveViewStrategy::class,
             self::P_STRATEGY_RECEIVE_VIEWS_CLASS   => ReceiveViewsStrategy::class,
             self::P_STRATEGY_WAITING_ACTION_CLASS  => WaitingForActionStrategy::class,
             self::P_STRATEGY_CHECK_ENTITY_CLASS    => CheckEntityStrategy::class,
@@ -748,6 +752,13 @@ class CommonProvider
         return new ReceiveIdsStrategy($index);
     }
 
+    public function strategyReceiveView(Container $container, Parameters $parameters): ReceiveViewInterface
+    {
+        $class = $parameters->get(self::P_STRATEGY_RECEIVE_VIEW_CLASS);
+
+        return $container->has($class) ? $container->get($class) : new $class;
+    }
+
     public function strategyReceiveViews(Container $container, Parameters $parameters): ReceiveViewsInterface
     {
         $class = $parameters->get(self::P_STRATEGY_RECEIVE_VIEWS_CLASS);
@@ -761,6 +772,13 @@ class CommonProvider
         TransactionLazyManager $transaction
     ): ReceiveViewsStrategy {
         return new ReceiveViewsStrategy($index, $view, $transaction);
+    }
+
+    public function strategyReceiveViewImplementation(
+        IndexLazyManager $index,
+        ViewLazyManager $view
+    ): ReceiveViewStrategy {
+        return new ReceiveViewStrategy($index, $view);
     }
 
     public function strategyWaitingForAction(Container $container, Parameters $parameters): WaitingForActionInterface
@@ -810,15 +828,16 @@ class CommonProvider
         Parameters $parameters,
         UpdateEntityInterface $update,
         RemoveEntityInterface $remove,
-        ReceiveIdsInterface $receiveIds,
-        ReceiveViewsInterface $receiveViews,
+        ReceiveIdsInterface $ids,
+        ReceiveViewInterface $view,
+        ReceiveViewsInterface $views,
         WaitingForActionInterface $waiting,
         CheckEntityInterface $check,
         DispatcherLazyManager $events
     ): MonolithFacade {
         $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
 
-        return new MonolithFacade($update, $remove, $receiveIds, $receiveViews, $waiting, $check, $events, $logger);
+        return new MonolithFacade($update, $remove, $ids, $view, $views, $waiting, $check, $events, $logger);
     }
 
     public function backendFacade(
@@ -826,8 +845,9 @@ class CommonProvider
         Parameters $parameters,
         UpdateEntityInterface $update,
         RemoveEntityInterface $remove,
-        ReceiveIdsInterface $receiveIds,
-        ReceiveViewsInterface $receiveViews,
+        ReceiveIdsInterface $ids,
+        ReceiveViewInterface $view,
+        ReceiveViewsInterface $views,
         WaitingForActionInterface $waiting,
         CheckEntityInterface $check,
         DispatcherLazyManager $events,
@@ -835,7 +855,7 @@ class CommonProvider
     ): BackendFacade {
         $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
 
-        return new BackendFacade($update, $remove, $receiveIds, $receiveViews, $waiting, $check, $events, $bus,
+        return new BackendFacade($update, $remove, $ids, $view, $views, $waiting, $check, $events, $bus,
             $logger);
     }
 

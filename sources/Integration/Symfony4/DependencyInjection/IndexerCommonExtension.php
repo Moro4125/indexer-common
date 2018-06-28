@@ -47,7 +47,9 @@ use Moro\Indexer\Common\Strategy\CheckEntity\Decorator\SourceIgnoreDecorator;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Moro\Indexer\Common\Strategy\ReceiveIds\ReceiveIdsStrategy;
 use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
+use Moro\Indexer\Common\Strategy\ReceiveView\ReceiveViewStrategy;
 use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
+use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
 use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Strategy\RemoveEntity\Decorator\EntityCacheStrategy as EntityCacheRemoveStrategy;
 use Moro\Indexer\Common\Strategy\RemoveEntity\RemoveEntityStrategy;
@@ -332,6 +334,13 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             $definition->addArgument(new Reference(IndexLazyManager::class));
         }
 
+        $definition = $container->register(ReceiveViewInterface::class, $config[Config::P_STRATEGY_RECEIVE_VIEW_CLASS]);
+
+        if ($definition->getClass() == ReceiveViewStrategy::class) {
+            $definition->addArgument(new Reference(IndexLazyManager::class));
+            $definition->addArgument(new Reference(ViewLazyManager::class));
+        }
+
         $definition = $container->register(ReceiveViewsInterface::class,
             $config[Config::P_STRATEGY_RECEIVE_VIEWS_CLASS]);
 
@@ -375,6 +384,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             ->addArgument(new Reference(UpdateEntityInterface::class))
             ->addArgument(new Reference(RemoveEntityInterface::class))
             ->addArgument(new Reference(ReceiveIdsInterface::class))
+            ->addArgument(new Reference(ReceiveViewInterface::class))
             ->addArgument(new Reference(ReceiveViewsInterface::class))
             ->addArgument(new Reference(WaitingForActionInterface::class))
             ->addArgument(new Reference(CheckEntityInterface::class))
@@ -384,6 +394,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             ->addArgument(new Reference(UpdateEntityInterface::class))
             ->addArgument(new Reference(RemoveEntityInterface::class))
             ->addArgument(new Reference(ReceiveIdsInterface::class))
+            ->addArgument(new Reference(ReceiveViewInterface::class))
             ->addArgument(new Reference(ReceiveViewsInterface::class))
             ->addArgument(new Reference(WaitingForActionInterface::class))
             ->addArgument(new Reference(CheckEntityInterface::class))

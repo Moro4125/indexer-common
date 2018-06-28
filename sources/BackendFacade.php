@@ -13,7 +13,7 @@ use Moro\Indexer\Common\Exception\UnknownTypeInterface;
 use Moro\Indexer\Common\Scheduler\EntryInterface;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
+use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
 use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
 use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
@@ -32,7 +32,9 @@ class BackendFacade
     protected $_removeEntityStrategy;
     /** @var ReceiveIdsInterface */
     protected $_receiveIdsStrategy;
-    /** @var ReceiveViewsStrategy */
+    /** @var ReceiveViewInterface */
+    protected $_receiveViewStrategy;
+    /** @var ReceiveViewsInterface */
     protected $_receiveViewsStrategy;
     /** @var WaitingForActionInterface */
     protected $_waitingStrategy;
@@ -49,6 +51,7 @@ class BackendFacade
      * @param UpdateEntityInterface $updateStrategy
      * @param RemoveEntityInterface $removeStrategy
      * @param ReceiveIdsInterface $receiveIdsStrategy
+     * @param ReceiveViewInterface $receiveViewStrategy
      * @param ReceiveViewsInterface $receiveViewsStrategy
      * @param WaitingForActionInterface $waitingStrategy
      * @param CheckEntityInterface $checkStrategy
@@ -60,6 +63,7 @@ class BackendFacade
         UpdateEntityInterface $updateStrategy,
         RemoveEntityInterface $removeStrategy,
         ReceiveIdsInterface $receiveIdsStrategy,
+        ReceiveViewInterface $receiveViewStrategy,
         ReceiveViewsInterface $receiveViewsStrategy,
         WaitingForActionInterface $waitingStrategy,
         CheckEntityInterface $checkStrategy,
@@ -70,6 +74,7 @@ class BackendFacade
         $this->_updateEntityStrategy = $updateStrategy;
         $this->_removeEntityStrategy = $removeStrategy;
         $this->_receiveIdsStrategy = $receiveIdsStrategy;
+        $this->_receiveViewStrategy = $receiveViewStrategy;
         $this->_receiveViewsStrategy = $receiveViewsStrategy;
         $this->_waitingStrategy = $waitingStrategy;
         $this->_checkEntityStrategy = $checkStrategy;
@@ -186,6 +191,22 @@ class BackendFacade
         $list = $this->_receiveViewsStrategy->receive($index, $kind, $message['offset'], $message['limit']);
 
         $msg = ['action' => 'receive', 'list' => $list];
+        $this->_busManager->send($msg, implode(':', $message['sender']));
+    }
+
+    /**
+     * @param array $message
+     */
+    protected function _busActionGet(array $message)
+    {
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $index = $message['index'];
+        $kind = $message['kind'];
+        $id = $message['id'];
+
+        $entity = $this->_receiveViewStrategy->receive($index, $kind, $id);
+
+        $msg = ['action' => 'receive', 'entity' => $entity];
         $this->_busManager->send($msg, implode(':', $message['sender']));
     }
 

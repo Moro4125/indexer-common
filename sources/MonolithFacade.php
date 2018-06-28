@@ -10,6 +10,7 @@ use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\Exception\WrongStructureException;
 use Moro\Indexer\Common\Strategy\CheckEntityInterface;
 use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
+use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
 use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
 use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
 use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
@@ -26,6 +27,7 @@ class MonolithFacade extends BackendFacade
      * @param UpdateEntityInterface $updateStrategy
      * @param RemoveEntityInterface $removeStrategy
      * @param ReceiveIdsInterface $receiveIdsStrategy
+     * @param ReceiveViewInterface $receiveViewStrategy
      * @param ReceiveViewsInterface $receiveViewsStrategy
      * @param WaitingForActionInterface $waitingStrategy
      * @param CheckEntityInterface $checkStrategy
@@ -36,14 +38,15 @@ class MonolithFacade extends BackendFacade
         UpdateEntityInterface $updateStrategy,
         RemoveEntityInterface $removeStrategy,
         ReceiveIdsInterface $receiveIdsStrategy,
+        ReceiveViewInterface $receiveViewStrategy,
         ReceiveViewsInterface $receiveViewsStrategy,
         WaitingForActionInterface $waitingStrategy,
         CheckEntityInterface $checkStrategy,
         EventManager $events,
         LoggerInterface $logger = null
     ) {
-        parent::__construct($updateStrategy, $removeStrategy, $receiveIdsStrategy, $receiveViewsStrategy,
-            $waitingStrategy, $checkStrategy, $events, null, $logger);
+        parent::__construct($updateStrategy, $removeStrategy, $receiveIdsStrategy, $receiveViewStrategy,
+            $receiveViewsStrategy, $waitingStrategy, $checkStrategy, $events, null, $logger);
     }
 
     /**
@@ -113,5 +116,21 @@ class MonolithFacade extends BackendFacade
         }
 
         return $this->_receiveViewsStrategy->receive($index, $kind, $offset, $limit);
+    }
+
+    /**
+     * @param string $index
+     * @param string $kind
+     * @param string $id
+     * @return string|null
+     */
+    public function receiveView(string $index, string $kind, string $id): ?string
+    {
+        if ($this->_logger) {
+            $message = 'Indexer receive entity with ID "%3$s" from index "%1$s" with view "%2$s".';
+            $this->_logger->notice(sprintf($message, $index, $kind, $id));
+        }
+
+        return $this->_receiveViewStrategy->receive($index, $kind, $id);
     }
 }

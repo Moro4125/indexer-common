@@ -19,6 +19,7 @@ use Moro\Indexer\Common\Source\Manager\SourceManager;
 use Moro\Indexer\Common\Source\Type\SourceType;
 use Moro\Indexer\Common\Strategy\CheckEntity\CheckEntityStrategy;
 use Moro\Indexer\Common\Strategy\ReceiveIds\ReceiveIdsStrategy;
+use Moro\Indexer\Common\Strategy\ReceiveView\ReceiveViewStrategy;
 use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
 use Moro\Indexer\Common\Strategy\RemoveEntity\RemoveEntityStrategy;
 use Moro\Indexer\Common\Strategy\UpdateEntity\UpdateEntityStrategy;
@@ -76,6 +77,7 @@ class IndexerCommonConfiguration implements ConfigurationInterface
     const P_STRATEGY_UPDATE_ENTITY_CLASS   = 'strategy_update_entity_class';
     const P_STRATEGY_REMOVE_ENTITY_CLASS   = 'strategy_remove_entity_class';
     const P_STRATEGY_RECEIVE_IDS_CLASS     = 'strategy_receive_ids_class';
+    const P_STRATEGY_RECEIVE_VIEW_CLASS    = 'strategy_receive_view_class';
     const P_STRATEGY_RECEIVE_VIEWS_CLASS   = 'strategy_receive_views_class';
     const P_STRATEGY_WAITING_ACTION_CLASS  = 'strategy_waiting_action_class';
     const P_STRATEGY_CHECK_ENTITY_CLASS    = 'strategy_check_entity_class';
@@ -207,6 +209,9 @@ class IndexerCommonConfiguration implements ConfigurationInterface
 
         $root->scalarNode(self::P_STRATEGY_RECEIVE_IDS_CLASS)
             ->defaultValue(ReceiveIdsStrategy::class);
+
+        $root->scalarNode(self::P_STRATEGY_RECEIVE_VIEW_CLASS)
+            ->defaultValue(ReceiveViewStrategy::class);
 
         $root->scalarNode(self::P_STRATEGY_RECEIVE_VIEWS_CLASS)
             ->defaultValue(ReceiveViewsStrategy::class);
