@@ -145,11 +145,15 @@ class UniversalInstruction implements InstructionInterface
             $times = $this->_mapVariables($variables, $value);
             $time = reset($times);
 
-            $timezone = new \DateTimeZone('UTC');
-            $datetime = new \DateTime($time, $timezone);
-            $timestamp = $datetime->getTimestamp();
+            if (!$timestamp = is_numeric($time) ? (int)$time : null) {
+                $timezone = new \DateTimeZone('UTC');
+                $datetime = new \DateTime($time, $timezone);
+                $timestamp = $datetime->getTimestamp();
+            }
 
-            $result->addToScheduler($timestamp);
+            if ($timestamp > time()) {
+                $result->addToScheduler($timestamp);
+            }
         }
     }
 
