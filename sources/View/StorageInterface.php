@@ -11,7 +11,7 @@ interface StorageInterface
     /**
      * @param string $type
      * @param string $id
-     * @return array
+     * @return array of "kinds"
      */
     function find(string $type, string $id): array;
 
