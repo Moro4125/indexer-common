@@ -27,17 +27,23 @@ class HttpApiDebugAdapter extends HttpApiAdapter
      * @param string $url
      * @param array|null $post
      * @param array|null $headers
+     * @param string|null $proxy
      * @return string
      * @throws Throwable
      */
-    protected function _sendRequest(string $url, array $post = null, array &$headers = null): string
+    protected function _sendRequest(
+        string $url,
+        array $post = null,
+        array &$headers = null,
+        string $proxy = null
+    ): string
     {
         $message = sprintf('> %1$s %2$s', isset($post) ? 'POST' : 'GET', $url);
         $this->_logger->debug($message, $headers ?? []);
         isset($post) && $this->_logger->debug('>', $post);
 
         try {
-            $response = parent::_sendRequest($url, $post, $headers);
+            $response = parent::_sendRequest($url, $post, $headers, $proxy);
         } catch (Throwable $e) {
             $message = '< Status: 520, Exception: %1$s, %2$s | %3$s:%4$s | %5$s';
             $message = sprintf($message, get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getCode());

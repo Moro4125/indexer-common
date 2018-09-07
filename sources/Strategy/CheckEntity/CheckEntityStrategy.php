@@ -34,6 +34,8 @@ class CheckEntityStrategy implements CheckEntityInterface
     protected $_receiveLimit;
     /** @var integer */
     protected $_updateLimit;
+    /** @var integer */
+    protected $_stepLimit;
 
     /**
      * @param SourceManager $source
@@ -44,6 +46,7 @@ class CheckEntityStrategy implements CheckEntityInterface
      * @param EntryFactory $factory
      * @param null|int $receive
      * @param null|int $update
+     * @param null|int $steps
      */
     public function __construct(
         SourceManager $source,
@@ -53,7 +56,8 @@ class CheckEntityStrategy implements CheckEntityInterface
         TransactionManager $transaction,
         EntryFactory $factory,
         int $receive = null,
-        int $update = null
+        int $update = null,
+        int $steps = null
     ) {
         $this->_source = $source;
         $this->_index = $index;
@@ -63,6 +67,7 @@ class CheckEntityStrategy implements CheckEntityInterface
         $this->_factory = $factory;
         $this->_receiveLimit = $receive ?? 1000;
         $this->_updateLimit = $update ?? 100;
+        $this->_stepLimit = $steps ?? 0;
     }
 
     /**
@@ -83,7 +88,6 @@ class CheckEntityStrategy implements CheckEntityInterface
 
             while ($entitiesLimit && $idList = $this->_source->getIdList($type, $step * $limit, $limit)) {
                 $this->_checkOldestRecord($list, $type);
-                $step++;
 
                 $this->_transaction->execute(function () use ($type, $idList, &$list, &$entitiesLimit) {
                     foreach ($idList as $id => $updatedAt) {
@@ -108,6 +112,10 @@ class CheckEntityStrategy implements CheckEntityInterface
                         }
                     }
                 });
+
+                if ($this->_stepLimit === ++$step) {
+                    break;
+                }
             }
 
             while ($entitiesLimit && reset($list) && $id = key($list)) {

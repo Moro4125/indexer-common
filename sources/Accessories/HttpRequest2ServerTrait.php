@@ -13,7 +13,7 @@ trait HttpRequest2ServerTrait
 {
     private $_cookies;
 
-    protected function _doRequest(string $url, array $data, bool $usePostMethod = null): array
+    protected function _doRequest(string $url, array $data, bool $usePostMethod = null, string $proxy = null): array
     {
         if (null === $post = ($usePostMethod ? $data : null)) {
             $query = http_build_query($data);
@@ -35,7 +35,7 @@ trait HttpRequest2ServerTrait
             $headers[] = 'Authorization: Basic ' . base64_encode(implode(':', $this->_basicAuth));
         }
 
-        $response = $this->_sendRequest($url, $post, $headers);
+        $response = $this->_sendRequest($url, $post, $headers, $proxy);
 
         if (isset($headers['Response-Code']) && $headers['Response-Code'] == 404) {
             throw new NotFoundException();
@@ -55,7 +55,12 @@ trait HttpRequest2ServerTrait
         return json_decode($response, true);
     }
 
-    protected function _sendRequest(string $url, array $post = null, array &$headers = null): string
+    protected function _sendRequest(
+        string $url,
+        array $post = null,
+        array &$headers = null,
+        string $proxy = null
+    ): string
     {
         $context['http']['protocol_version'] = '1.1';
         $context['http']['method'] = is_null($post) ? 'GET' : 'POST';
@@ -67,6 +72,11 @@ trait HttpRequest2ServerTrait
             $headers[] = 'Content-Type: application/x-www-form-urlencoded';
             $headers[] = 'Content-Length: ' . ob_get_length();
             $context['http']['content'] = ob_get_clean();
+        }
+
+        if ($proxy) {
+            $context['http']['proxy'] = $proxy;
+            $context['http']['request_fulluri'] = true;
         }
 
         $headers[] = '';

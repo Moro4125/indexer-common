@@ -16,10 +16,16 @@ class HttpApiAdapter implements AdapterInterface
     use ArraysGetByPathTrait;
     use HttpRequest2ServerTrait;
 
+    private $_proxy;
     private $_urlIdList;
     private $_urlEntityById;
     private $_basicAuth;
     private $_usePostMethod;
+
+    public function setProxy(string $proxy)
+    {
+        $this->_proxy = $proxy;
+    }
 
     public function setUsePostMethod(bool $flag)
     {
@@ -47,7 +53,8 @@ class HttpApiAdapter implements AdapterInterface
         list($url, $keyFrom, $keyLimit, $keyResult) = $this->_urlIdList;
 
         $post = $this->_usePostMethod;
-        $response = $this->_doRequest($url, [$keyFrom ?? 'from' => $from, $keyLimit ?? 'limit' => $limit], $post);
+        $data = [$keyFrom ?? 'from' => $from, $keyLimit ?? 'limit' => $limit];
+        $response = $this->_doRequest($url, $data, $post, $this->_proxy);
 
         if ($keyResult) {
             $result = $this->_getByPath($keyResult, $response, $flag);
@@ -67,7 +74,7 @@ class HttpApiAdapter implements AdapterInterface
     {
         list($url, $keyId, $keyResult) = $this->_urlEntityById;
 
-        $response = $this->_doRequest($url, [$keyId ?? 'id' => $id], $this->_usePostMethod);
+        $response = $this->_doRequest($url, [$keyId ?? 'id' => $id], $this->_usePostMethod, $this->_proxy);
 
         if ($keyResult) {
             $result = $this->_getByPath($keyResult, $response, $flag);

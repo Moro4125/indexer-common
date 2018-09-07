@@ -229,6 +229,11 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
                     $arguments[] = array_shift($auth);
                     $definition->addMethodCall('setBasicAuthorization', $arguments);
                 }
+
+                if ($cfg[Config::P_SOURCE_HTTP_PROXY]) {
+                    $arguments = [$cfg[Config::P_SOURCE_HTTP_PROXY]];
+                    $definition->addMethodCall('setProxy', $arguments);
+                }
             }
 
             if ($limit = $config[Config::P_ENTITY_CACHE]) {
@@ -370,6 +375,9 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             $definition->addArgument(new Reference(DispatcherLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
             $definition->addArgument(new Reference(SchedulerFactoryInterface::class));
+            $definition->addArgument($config[Config::P_STRATEGY_CHECK_ENTITY_LIMIT] ?? null);
+            $definition->addArgument($config[Config::P_STRATEGY_CHECK_ENTITY_WORKS] ?? null);
+            $definition->addArgument($config[Config::P_STRATEGY_CHECK_ENTITY_STEPS] ?? null);
         }
 
         $renamedId = SourceIgnoreDecorator::class . '.inner';
