@@ -1,6 +1,6 @@
 {
   "name": "moro/indexer-common",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "A library that provides common classes for entities indexer",
   "type": "library",
   "license": "MIT",
@@ -19,7 +19,8 @@
   "require": {
     "php": ">=7.1",
     "psr/log": "1.0.0",
-    "psr/container": "1.0.0"
+    "psr/container": "1.0.0",
+    "ext-json": "*"
   },
   "require-dev": {
     "phing/phing": "~2.0",

@@ -42,8 +42,12 @@ class HttpApiAdapter implements AdapterInterface
         $this->_urlEntityById = [$url, $keyId, $keyResult];
     }
 
-    public function setBasicAuthorization(string $user, string $password)
+	public function setBasicAuthorization(string $user = null, string $password = null)
     {
+		if (is_string($user) && is_null($password) && strpos($user, ':')) {
+			list($user, $password) = explode(':', $user, 2);
+		}
+
         $this->_basicAuth['user'] = $user;
         $this->_basicAuth['pass'] = $password;
     }

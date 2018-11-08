@@ -13,14 +13,14 @@ use Moro\Indexer\Common\Source\ManagerInterface as SourceManagerInterface;
  */
 class ManagerDecorator extends AbstractDecorator
 {
-    protected $_configuration;
+	protected $_manager;
     protected $_factory;
 
-    public function __construct(ConfigurationManagerInterface $configuration, FactoryInterface $factory)
+	public function __construct(ConfigurationManagerInterface $manager, FactoryInterface $factory)
     {
-        $configuration->apply($factory);
+		$manager->apply($factory);
 
-        $this->_configuration = $configuration;
+		$this->_manager = $manager;
         $this->_factory = $factory;
     }
 
@@ -28,7 +28,7 @@ class ManagerDecorator extends AbstractDecorator
     {
         if (empty($this->_instance)) {
             $this->_instance = $this->_factory->newManager();
-            $this->_configuration->apply($this->_instance);
+			$this->_manager->apply($this->_instance);
         }
 
         return $this->_instance;

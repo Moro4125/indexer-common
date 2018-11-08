@@ -23,9 +23,11 @@ trait HttpRequest2ServerTrait
         $headers = [
             'Accept-Type: application/json',
             'Accept-Charset: utf-8, *;q=0.1',
-            'Accept-Encoding: gzip',
-            'Connection: close',
         ];
+
+		if (function_exists('gzdecode')) {
+			$headers[] = 'Accept-Encoding: gzip';
+		}
 
         foreach ($this->_cookies ?? [] as $name => $value) {
             $headers[] = 'Cookie: ' . $name . '=' . $value;
@@ -34,6 +36,8 @@ trait HttpRequest2ServerTrait
         if (isset($this->_basicAuth)) {
             $headers[] = 'Authorization: Basic ' . base64_encode(implode(':', $this->_basicAuth));
         }
+
+		$headers[] = 'Connection: close';
 
         $response = $this->_sendRequest($url, $post, $headers, $proxy);
 
@@ -62,25 +66,27 @@ trait HttpRequest2ServerTrait
         string $proxy = null
     ): string
     {
-        $context['http']['protocol_version'] = '1.1';
-        $context['http']['method'] = is_null($post) ? 'GET' : 'POST';
-        $context['http']['ignore_errors'] = true;
+		$scheme = (strpos($url, 'https://') === 0) ? 'https' : 'http';
+
+		$context[$scheme]['protocol_version'] = '1.1';
+		$context[$scheme]['method'] = is_null($post) ? 'GET' : 'POST';
+		$context[$scheme]['ignore_errors'] = true;
 
         if (isset($post)) {
             ob_start();
             echo http_build_query($post, '', '&');
             $headers[] = 'Content-Type: application/x-www-form-urlencoded';
             $headers[] = 'Content-Length: ' . ob_get_length();
-            $context['http']['content'] = ob_get_clean();
+			$context[$scheme]['content'] = ob_get_clean();
         }
 
         if ($proxy) {
-            $context['http']['proxy'] = $proxy;
-            $context['http']['request_fulluri'] = true;
+			$context[$scheme]['proxy'] = $proxy;
+			$context[$scheme]['request_fulluri'] = true;
         }
 
         $headers[] = '';
-        $context['http']['header'] = implode("\r\n", $headers);
+		$context[$scheme]['header'] = implode("\r\n", $headers);
 
         $context = stream_context_create($context);
         $response = file_get_contents($url, false, $context);
@@ -103,7 +109,10 @@ trait HttpRequest2ServerTrait
         }
 
         if (isset($headers['Content-Encoding']) && false !== strpos($headers['Content-Encoding'], 'gzip')) {
-            $response = gzdecode($response);
+			if (function_exists('gzdecode')) {
+				/** @noinspection PhpComposerExtensionStubsInspection */
+				$response = gzdecode($response);
+			}
         }
 
         return (string)$response;

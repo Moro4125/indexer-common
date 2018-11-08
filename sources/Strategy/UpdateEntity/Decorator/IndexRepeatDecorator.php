@@ -32,7 +32,7 @@ class IndexRepeatDecorator implements UpdateStrategy
     {
         $this->_strategy = $strategy;
         $this->_events = $events;
-        $this->_retry = $retry ?? 3;
+		$this->_retry = max(1, $retry ?? 3);
     }
 
     /**
