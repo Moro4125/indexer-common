@@ -11,13 +11,13 @@ use Moro\Indexer\Common\Dispatcher\Event\WaitRandomTickEvent;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Exception\UnknownTypeInterface;
 use Moro\Indexer\Common\Scheduler\EntryInterface;
-use Moro\Indexer\Common\Strategy\CheckEntityInterface;
-use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
-use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
-use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
-use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
+use Moro\Indexer\Common\Action\CheckEntityInterface;
+use Moro\Indexer\Common\Action\ReceiveIdsInterface;
+use Moro\Indexer\Common\Action\ReceiveViewInterface;
+use Moro\Indexer\Common\Action\ReceiveViewsInterface;
+use Moro\Indexer\Common\Action\RemoveEntityInterface;
+use Moro\Indexer\Common\Action\UpdateEntityInterface;
+use Moro\Indexer\Common\Action\WaitingForActionInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,19 +27,19 @@ use Psr\Log\LoggerInterface;
 class BackendFacade
 {
     /** @var UpdateEntityInterface */
-    protected $_updateEntityStrategy;
+    protected $_updateEntityAction;
     /** @var RemoveEntityInterface */
-    protected $_removeEntityStrategy;
+    protected $_removeEntityAction;
     /** @var ReceiveIdsInterface */
-    protected $_receiveIdsStrategy;
+    protected $_receiveIdsAction;
     /** @var ReceiveViewInterface */
-    protected $_receiveViewStrategy;
+    protected $_receiveViewAction;
     /** @var ReceiveViewsInterface */
-    protected $_receiveViewsStrategy;
+    protected $_receiveViewsAction;
     /** @var WaitingForActionInterface */
-    protected $_waitingStrategy;
+    protected $_waitingAction;
     /** @var CheckEntityInterface */
-    protected $_checkEntityStrategy;
+    protected $_checkEntityAction;
     /** @var EventManager */
     protected $_eventManager;
     /** @var BusManager */
@@ -48,36 +48,36 @@ class BackendFacade
     protected $_logger;
 
     /**
-     * @param UpdateEntityInterface $updateStrategy
-     * @param RemoveEntityInterface $removeStrategy
-     * @param ReceiveIdsInterface $receiveIdsStrategy
-     * @param ReceiveViewInterface $receiveViewStrategy
-     * @param ReceiveViewsInterface $receiveViewsStrategy
-     * @param WaitingForActionInterface $waitingStrategy
-     * @param CheckEntityInterface $checkStrategy
+     * @param UpdateEntityInterface $updateAction
+     * @param RemoveEntityInterface $removeAction
+     * @param ReceiveIdsInterface $receiveIdsAction
+     * @param ReceiveViewInterface $receiveViewAction
+     * @param ReceiveViewsInterface $receiveViewsAction
+     * @param WaitingForActionInterface $waitingAction
+     * @param CheckEntityInterface $checkAction
      * @param EventManager $events
      * @param BusManager|null $bus
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        UpdateEntityInterface $updateStrategy,
-        RemoveEntityInterface $removeStrategy,
-        ReceiveIdsInterface $receiveIdsStrategy,
-        ReceiveViewInterface $receiveViewStrategy,
-        ReceiveViewsInterface $receiveViewsStrategy,
-        WaitingForActionInterface $waitingStrategy,
-        CheckEntityInterface $checkStrategy,
+        UpdateEntityInterface $updateAction,
+        RemoveEntityInterface $removeAction,
+        ReceiveIdsInterface $receiveIdsAction,
+        ReceiveViewInterface $receiveViewAction,
+        ReceiveViewsInterface $receiveViewsAction,
+        WaitingForActionInterface $waitingAction,
+        CheckEntityInterface $checkAction,
         EventManager $events,
         BusManager $bus = null,
         LoggerInterface $logger = null
     ) {
-        $this->_updateEntityStrategy = $updateStrategy;
-        $this->_removeEntityStrategy = $removeStrategy;
-        $this->_receiveIdsStrategy = $receiveIdsStrategy;
-        $this->_receiveViewStrategy = $receiveViewStrategy;
-        $this->_receiveViewsStrategy = $receiveViewsStrategy;
-        $this->_waitingStrategy = $waitingStrategy;
-        $this->_checkEntityStrategy = $checkStrategy;
+        $this->_updateEntityAction = $updateAction;
+        $this->_removeEntityAction = $removeAction;
+        $this->_receiveIdsAction = $receiveIdsAction;
+        $this->_receiveViewAction = $receiveViewAction;
+        $this->_receiveViewsAction = $receiveViewsAction;
+        $this->_waitingAction = $waitingAction;
+        $this->_checkEntityAction = $checkAction;
         $this->_eventManager = $events;
         $this->_busManager = $bus;
         $this->_logger = $logger;
@@ -150,7 +150,7 @@ class BackendFacade
         $this->_eventManager->attach(ExceptionIgnoreEvent::class, $listener5, EventManager::TOP);
 
         try {
-            $this->_waitingStrategy->wait($limit);
+            $this->_waitingAction->wait($limit);
         }
         finally {
             $this->_eventManager->detach(ExceptionIgnoreEvent::class, $listener5);
@@ -171,7 +171,7 @@ class BackendFacade
         $message['limit'] = $message['limit'] ?? null;
         $index = $message['index'];
 
-        $ids = $this->_receiveIdsStrategy->receiveIds($index, $message['offset'], $message['limit']);
+        $ids = $this->_receiveIdsAction->receiveIds($index, $message['offset'], $message['limit']);
 
         $msg = ['action' => 'receive', 'ids' => $ids];
         $this->_busManager->send($msg, implode(':', $message['sender']));
@@ -188,7 +188,7 @@ class BackendFacade
         $index = $message['index'];
         $kind = $message['kind'];
 
-        $list = $this->_receiveViewsStrategy->receive($index, $kind, $message['offset'], $message['limit']);
+        $list = $this->_receiveViewsAction->receive($index, $kind, $message['offset'], $message['limit']);
 
         $msg = ['action' => 'receive', 'list' => $list];
         $this->_busManager->send($msg, implode(':', $message['sender']));
@@ -204,7 +204,7 @@ class BackendFacade
         $kind = $message['kind'];
         $id = $message['id'];
 
-        $entity = $this->_receiveViewStrategy->receive($index, $kind, $id);
+        $entity = $this->_receiveViewAction->receive($index, $kind, $id);
 
         $msg = ['action' => 'receive', 'entity' => $entity];
         $this->_busManager->send($msg, implode(':', $message['sender']));
@@ -216,7 +216,7 @@ class BackendFacade
      */
     protected function _busActionUpdate(array $message)
     {
-        $this->_updateEntityStrategy->update($message['type'], $message['id']);
+        $this->_updateEntityAction->update($message['type'], $message['id']);
     }
 
     /**
@@ -224,7 +224,7 @@ class BackendFacade
      */
     protected function _busActionRemove(array $message)
     {
-        $this->_removeEntityStrategy->remove($message['type'], $message['id']);
+        $this->_removeEntityAction->remove($message['type'], $message['id']);
     }
 
     /**
@@ -233,7 +233,7 @@ class BackendFacade
      */
     protected function _schedulerActionUpdate(EntryInterface $entry)
     {
-        $this->_updateEntityStrategy->update($entry->getType(), $entry->getId());
+        $this->_updateEntityAction->update($entry->getType(), $entry->getId());
     }
 
     /**
@@ -242,7 +242,7 @@ class BackendFacade
      */
     protected function _schedulerActionRemove(EntryInterface $entry)
     {
-        $this->_removeEntityStrategy->remove($entry->getType(), $entry->getId());
+        $this->_removeEntityAction->remove($entry->getType(), $entry->getId());
     }
 
     /**
@@ -250,6 +250,6 @@ class BackendFacade
      */
     protected function _checkEntity(string $type)
     {
-        $this->_checkEntityStrategy->check($type);
+        $this->_checkEntityAction->check($type);
     }
 }

@@ -10,7 +10,7 @@
       "DoctrineDBALAdapter",
       "DoctrineDBALStorage",
       "HttpApiAdapter",
-      "Strategy",
+      "Action",
       "Integration"
     ]
   },

@@ -8,13 +8,13 @@ use Moro\Indexer\Common\Regulation\Exception\InstructionFailedException;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\Exception\WrongStructureException;
-use Moro\Indexer\Common\Strategy\CheckEntityInterface;
-use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
-use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
-use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
-use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
+use Moro\Indexer\Common\Action\CheckEntityInterface;
+use Moro\Indexer\Common\Action\ReceiveIdsInterface;
+use Moro\Indexer\Common\Action\ReceiveViewInterface;
+use Moro\Indexer\Common\Action\ReceiveViewsInterface;
+use Moro\Indexer\Common\Action\RemoveEntityInterface;
+use Moro\Indexer\Common\Action\UpdateEntityInterface;
+use Moro\Indexer\Common\Action\WaitingForActionInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -24,29 +24,29 @@ use Psr\Log\LoggerInterface;
 class MonolithFacade extends BackendFacade
 {
     /**
-     * @param UpdateEntityInterface $updateStrategy
-     * @param RemoveEntityInterface $removeStrategy
-     * @param ReceiveIdsInterface $receiveIdsStrategy
-     * @param ReceiveViewInterface $receiveViewStrategy
-     * @param ReceiveViewsInterface $receiveViewsStrategy
-     * @param WaitingForActionInterface $waitingStrategy
-     * @param CheckEntityInterface $checkStrategy
+     * @param UpdateEntityInterface $updateAction
+     * @param RemoveEntityInterface $removeAction
+     * @param ReceiveIdsInterface $receiveIdsAction
+     * @param ReceiveViewInterface $receiveViewAction
+     * @param ReceiveViewsInterface $receiveViewsAction
+     * @param WaitingForActionInterface $waitingAction
+     * @param CheckEntityInterface $checkAction
      * @param EventManager $events
      * @param LoggerInterface|null $logger
      */
     public function __construct(
-        UpdateEntityInterface $updateStrategy,
-        RemoveEntityInterface $removeStrategy,
-        ReceiveIdsInterface $receiveIdsStrategy,
-        ReceiveViewInterface $receiveViewStrategy,
-        ReceiveViewsInterface $receiveViewsStrategy,
-        WaitingForActionInterface $waitingStrategy,
-        CheckEntityInterface $checkStrategy,
+        UpdateEntityInterface $updateAction,
+        RemoveEntityInterface $removeAction,
+        ReceiveIdsInterface $receiveIdsAction,
+        ReceiveViewInterface $receiveViewAction,
+        ReceiveViewsInterface $receiveViewsAction,
+        WaitingForActionInterface $waitingAction,
+        CheckEntityInterface $checkAction,
         EventManager $events,
         LoggerInterface $logger = null
     ) {
-        parent::__construct($updateStrategy, $removeStrategy, $receiveIdsStrategy, $receiveViewStrategy,
-            $receiveViewsStrategy, $waitingStrategy, $checkStrategy, $events, null, $logger);
+        parent::__construct($updateAction, $removeAction, $receiveIdsAction, $receiveViewAction, $receiveViewsAction,
+            $waitingAction, $checkAction, $events, null, $logger);
     }
 
     /**
@@ -66,7 +66,7 @@ class MonolithFacade extends BackendFacade
             $this->_logger->notice(sprintf($message, $type, $id));
         }
 
-        $this->_updateEntityStrategy->update($type, $id);
+        $this->_updateEntityAction->update($type, $id);
     }
 
     /**
@@ -80,7 +80,7 @@ class MonolithFacade extends BackendFacade
             $this->_logger->notice(sprintf($message, $type, $id));
         }
 
-        $this->_removeEntityStrategy->remove($type, $id);
+        $this->_removeEntityAction->remove($type, $id);
     }
 
     /** @noinspection PhpDocMissingThrowsInspection */
@@ -98,7 +98,7 @@ class MonolithFacade extends BackendFacade
             $this->_logger->notice(sprintf($message, $index, (int)$offset, (int)$limit));
         }
 
-        return $this->_receiveIdsStrategy->receiveIds($index, $offset, $limit);
+        return $this->_receiveIdsAction->receiveIds($index, $offset, $limit);
     }
 
     /**
@@ -115,7 +115,7 @@ class MonolithFacade extends BackendFacade
             $this->_logger->notice(sprintf($message, $index, $kind, (int)$offset, (int)$limit));
         }
 
-        return $this->_receiveViewsStrategy->receive($index, $kind, $offset, $limit);
+        return $this->_receiveViewsAction->receive($index, $kind, $offset, $limit);
     }
 
     /**
@@ -131,6 +131,6 @@ class MonolithFacade extends BackendFacade
             $this->_logger->notice(sprintf($message, $index, $kind, $id));
         }
 
-        return $this->_receiveViewStrategy->receive($index, $kind, $id);
+        return $this->_receiveViewAction->receive($index, $kind, $id);
     }
 }

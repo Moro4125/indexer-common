@@ -14,7 +14,7 @@ use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManagerInterface;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException as SourceAdapterFailedException;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\Exception\WrongStructureException;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\SourceRepeatDecorator;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\SourceRepeatDecorator;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;
 use Moro\Indexer\Test\Container7\ConfigurationTestProvider;
 use Moro\Indexer\Test\Container7\DoctrineDBALTestProvider;
@@ -54,7 +54,7 @@ class IntegrationTest extends \PHPUnit\Framework\TestCase
             $this->_testFacade($facade);
         });
 
-        $this->specify('Test RepeatStrategy', function () {
+        $this->specify('Test RepeatAction', function () {
             $parameters = new Parameters([
                 CommonProvider::P_SOURCE_REPEAT          => true,
                 CommonProvider::P_SOURCE_REPEAT_INTERVAL => -10,

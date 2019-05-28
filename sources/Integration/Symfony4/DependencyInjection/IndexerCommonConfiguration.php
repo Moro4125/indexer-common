@@ -17,13 +17,13 @@ use Moro\Indexer\Common\Scheduler\Manager\SchedulerManager;
 use Moro\Indexer\Common\Source\Manager\LazyManager as SourceLazyManager;
 use Moro\Indexer\Common\Source\Manager\SourceManager;
 use Moro\Indexer\Common\Source\Type\SourceType;
-use Moro\Indexer\Common\Strategy\CheckEntity\CheckEntityStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveIds\ReceiveIdsStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveView\ReceiveViewStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
-use Moro\Indexer\Common\Strategy\RemoveEntity\RemoveEntityStrategy;
-use Moro\Indexer\Common\Strategy\UpdateEntity\UpdateEntityStrategy;
-use Moro\Indexer\Common\Strategy\WaitingForAction\WaitingForActionStrategy;
+use Moro\Indexer\Common\Action\CheckEntity\CheckEntityAction;
+use Moro\Indexer\Common\Action\ReceiveIds\ReceiveIdsAction;
+use Moro\Indexer\Common\Action\ReceiveView\ReceiveViewAction;
+use Moro\Indexer\Common\Action\ReceiveViews\ReceiveViewsAction;
+use Moro\Indexer\Common\Action\RemoveEntity\RemoveEntityAction;
+use Moro\Indexer\Common\Action\UpdateEntity\UpdateEntityAction;
+use Moro\Indexer\Common\Action\WaitingForAction\WaitingForActionAction;
 use Moro\Indexer\Common\Transaction\Manager\LazyManager as TransactionLazyManager;
 use Moro\Indexer\Common\Transaction\Manager\TransactionManager;
 use Moro\Indexer\Common\View\Manager\LazyManager as ViewLazyManager;
@@ -208,25 +208,25 @@ class IndexerCommonConfiguration implements ConfigurationInterface
             ->defaultValue(TransactionLazyManager::class);
 
         $root->scalarNode(self::P_STRATEGY_UPDATE_ENTITY_CLASS)
-            ->defaultValue(UpdateEntityStrategy::class);
+            ->defaultValue(UpdateEntityAction::class);
 
         $root->scalarNode(self::P_STRATEGY_REMOVE_ENTITY_CLASS)
-            ->defaultValue(RemoveEntityStrategy::class);
+            ->defaultValue(RemoveEntityAction::class);
 
         $root->scalarNode(self::P_STRATEGY_RECEIVE_IDS_CLASS)
-            ->defaultValue(ReceiveIdsStrategy::class);
+            ->defaultValue(ReceiveIdsAction::class);
 
         $root->scalarNode(self::P_STRATEGY_RECEIVE_VIEW_CLASS)
-            ->defaultValue(ReceiveViewStrategy::class);
+            ->defaultValue(ReceiveViewAction::class);
 
         $root->scalarNode(self::P_STRATEGY_RECEIVE_VIEWS_CLASS)
-            ->defaultValue(ReceiveViewsStrategy::class);
+            ->defaultValue(ReceiveViewsAction::class);
 
         $root->scalarNode(self::P_STRATEGY_WAITING_ACTION_CLASS)
-            ->defaultValue(WaitingForActionStrategy::class);
+            ->defaultValue(WaitingForActionAction::class);
 
         $root->scalarNode(self::P_STRATEGY_CHECK_ENTITY_CLASS)
-            ->defaultValue(CheckEntityStrategy::class);
+            ->defaultValue(CheckEntityAction::class);
 
         $root->scalarNode(self::P_STRATEGY_CHECK_ENTITY_LIMIT)
             ->defaultNull();

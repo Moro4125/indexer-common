@@ -51,25 +51,25 @@ use Moro\Indexer\Common\Source\NormalizerInterface;
 use Moro\Indexer\Common\Source\Type\Decorator\EntityCacheDecorator;
 use Moro\Indexer\Common\Source\Type\SourceType;
 use Moro\Indexer\Common\Source\TypeInterface as SourceTypeInterface;
-use Moro\Indexer\Common\Strategy\CheckEntity\CheckEntityStrategy;
-use Moro\Indexer\Common\Strategy\CheckEntity\Decorator\SourceIgnoreDecorator;
-use Moro\Indexer\Common\Strategy\CheckEntityInterface;
-use Moro\Indexer\Common\Strategy\ReceiveIds\ReceiveIdsStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
-use Moro\Indexer\Common\Strategy\ReceiveView\ReceiveViewStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
-use Moro\Indexer\Common\Strategy\RemoveEntity\Decorator\EntityCacheStrategy as EntityCacheRemoveStrategy;
-use Moro\Indexer\Common\Strategy\RemoveEntity\RemoveEntityStrategy;
-use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\EntityCacheDecorator as EntityCacheUpdateStrategy;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\IndexRepeatDecorator;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\SourceRepeatDecorator;
-use Moro\Indexer\Common\Strategy\UpdateEntity\UpdateEntityStrategy;
-use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
-use Moro\Indexer\Common\Strategy\WaitingForAction\WaitingForActionStrategy;
-use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
+use Moro\Indexer\Common\Action\CheckEntity\CheckEntityAction;
+use Moro\Indexer\Common\Action\CheckEntity\Decorator\SourceIgnoreDecorator;
+use Moro\Indexer\Common\Action\CheckEntityInterface;
+use Moro\Indexer\Common\Action\ReceiveIds\ReceiveIdsAction;
+use Moro\Indexer\Common\Action\ReceiveIdsInterface;
+use Moro\Indexer\Common\Action\ReceiveView\ReceiveViewAction;
+use Moro\Indexer\Common\Action\ReceiveViews\ReceiveViewsAction;
+use Moro\Indexer\Common\Action\ReceiveViewInterface;
+use Moro\Indexer\Common\Action\ReceiveViewsInterface;
+use Moro\Indexer\Common\Action\RemoveEntity\Decorator\EntityCacheDecorator as EntityCacheRemoveAction;
+use Moro\Indexer\Common\Action\RemoveEntity\RemoveEntityAction;
+use Moro\Indexer\Common\Action\RemoveEntityInterface;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\EntityCacheDecorator as EntityCacheUpdateAction;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\IndexRepeatDecorator;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\SourceRepeatDecorator;
+use Moro\Indexer\Common\Action\UpdateEntity\UpdateEntityAction;
+use Moro\Indexer\Common\Action\UpdateEntityInterface;
+use Moro\Indexer\Common\Action\WaitingForAction\WaitingForActionAction;
+use Moro\Indexer\Common\Action\WaitingForActionInterface;
 use Moro\Indexer\Common\Transaction\Manager\LazyManager as TransactionLazyManager;
 use Moro\Indexer\Common\Transaction\Manager\TransactionManager;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManagerInterface;
@@ -166,13 +166,13 @@ class CommonProvider
             self::P_SCHEDULER_MANAGER_LAZY_CLASS   => SchedulerLazyManager::class,
             self::P_TRANSACTION_MANAGER_CLASS      => TransactionManager::class,
             self::P_TRANSACTION_MANAGER_LAZY_CLASS => TransactionLazyManager::class,
-            self::P_STRATEGY_UPDATE_ENTITY_CLASS   => UpdateEntityStrategy::class,
-            self::P_STRATEGY_REMOVE_ENTITY_CLASS   => RemoveEntityStrategy::class,
-            self::P_STRATEGY_RECEIVE_IDS_CLASS     => ReceiveIdsStrategy::class,
-            self::P_STRATEGY_RECEIVE_VIEW_CLASS    => ReceiveViewStrategy::class,
-            self::P_STRATEGY_RECEIVE_VIEWS_CLASS   => ReceiveViewsStrategy::class,
-            self::P_STRATEGY_WAITING_ACTION_CLASS  => WaitingForActionStrategy::class,
-            self::P_STRATEGY_CHECK_ENTITY_CLASS    => CheckEntityStrategy::class,
+            self::P_STRATEGY_UPDATE_ENTITY_CLASS   => UpdateEntityAction::class,
+            self::P_STRATEGY_REMOVE_ENTITY_CLASS   => RemoveEntityAction::class,
+            self::P_STRATEGY_RECEIVE_IDS_CLASS     => ReceiveIdsAction::class,
+            self::P_STRATEGY_RECEIVE_VIEW_CLASS    => ReceiveViewAction::class,
+            self::P_STRATEGY_RECEIVE_VIEWS_CLASS   => ReceiveViewsAction::class,
+            self::P_STRATEGY_WAITING_ACTION_CLASS  => WaitingForActionAction::class,
+            self::P_STRATEGY_CHECK_ENTITY_CLASS    => CheckEntityAction::class,
         ]);
     }
 
@@ -675,8 +675,8 @@ class CommonProvider
         SchedulerLazyManager $scheduler,
         TransactionLazyManager $transaction,
         DispatcherLazyManager $events
-    ): UpdateEntityStrategy {
-        return new UpdateEntityStrategy($source, $regulation, $index, $view, $scheduler, $transaction, $events);
+    ): UpdateEntityAction {
+        return new UpdateEntityAction($source, $regulation, $index, $view, $scheduler, $transaction, $events);
     }
 
     public function strategyUpdateEntityRepeatDecorator(
@@ -705,9 +705,9 @@ class CommonProvider
     public function strategyUpdateEntityCacheDecorator(
         UpdateEntityInterface $strategy,
         Parameters $parameters
-    ): ?EntityCacheUpdateStrategy {
+    ): ?EntityCacheUpdateAction {
         if ($limit = $parameters->get(self::P_ENTITY_CACHE)) {
-            return new EntityCacheUpdateStrategy($strategy);
+            return new EntityCacheUpdateAction($strategy);
         }
 
         return null;
@@ -725,7 +725,7 @@ class CommonProvider
         Parameters $parameters
     ): ?RemoveEntityInterface {
         if ($limit = $parameters->get(self::P_ENTITY_CACHE)) {
-            return new EntityCacheRemoveStrategy($strategy);
+            return new EntityCacheRemoveAction($strategy);
         }
 
         return null;
@@ -736,8 +736,8 @@ class CommonProvider
         ViewLazyManager $view,
         TransactionLazyManager $transaction,
         DispatcherLazyManager $events
-    ): RemoveEntityStrategy {
-        return new RemoveEntityStrategy($index, $view, $transaction, $events);
+    ): RemoveEntityAction {
+        return new RemoveEntityAction($index, $view, $transaction, $events);
     }
 
     public function strategyReceiveIds(Container $container, Parameters $parameters): ReceiveIdsInterface
@@ -747,9 +747,9 @@ class CommonProvider
         return $container->has($class) ? $container->get($class) : new $class;
     }
 
-    public function strategyReceiveIdsImplementation(IndexLazyManager $index): ReceiveIdsStrategy
+    public function strategyReceiveIdsImplementation(IndexLazyManager $index): ReceiveIdsAction
     {
-        return new ReceiveIdsStrategy($index);
+        return new ReceiveIdsAction($index);
     }
 
     public function strategyReceiveView(Container $container, Parameters $parameters): ReceiveViewInterface
@@ -770,15 +770,15 @@ class CommonProvider
         IndexLazyManager $index,
         ViewLazyManager $view,
         TransactionLazyManager $transaction
-    ): ReceiveViewsStrategy {
-        return new ReceiveViewsStrategy($index, $view, $transaction);
+    ): ReceiveViewsAction {
+        return new ReceiveViewsAction($index, $view, $transaction);
     }
 
     public function strategyReceiveViewImplementation(
         IndexLazyManager $index,
         ViewLazyManager $view
-    ): ReceiveViewStrategy {
-        return new ReceiveViewStrategy($index, $view);
+    ): ReceiveViewAction {
+        return new ReceiveViewAction($index, $view);
     }
 
     public function strategyWaitingForAction(Container $container, Parameters $parameters): WaitingForActionInterface
@@ -794,8 +794,8 @@ class CommonProvider
         SchedulerLazyManager $scheduler,
         DispatcherLazyManager $events,
         TransactionLazyManager $transaction
-    ): WaitingForActionStrategy {
-        return new WaitingForActionStrategy($bus, $source, $scheduler, $events, $transaction);
+    ): WaitingForActionAction {
+        return new WaitingForActionAction($bus, $source, $scheduler, $events, $transaction);
     }
 
     public function strategyCheckEntity(Container $container, Parameters $parameters): CheckEntityInterface
@@ -819,8 +819,8 @@ class CommonProvider
         DispatcherLazyManager $events,
         TransactionLazyManager $transaction,
         SchedulerFactoryInterface $factory
-    ): CheckEntityStrategy {
-        return new CheckEntityStrategy($source, $index, $scheduler, $events, $transaction, $factory);
+    ): CheckEntityAction {
+        return new CheckEntityAction($source, $index, $scheduler, $events, $transaction, $factory);
     }
 
     public function monolithFacade(

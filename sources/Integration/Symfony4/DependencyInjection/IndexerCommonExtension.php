@@ -42,25 +42,25 @@ use Moro\Indexer\Common\Source\ManagerInterface as SourceManagerInterface;
 use Moro\Indexer\Common\Source\NormalizerInterface;
 use Moro\Indexer\Common\Source\Type\Decorator\EntityCacheDecorator;
 use Moro\Indexer\Common\Source\TypeInterface as SourceTypeInterface;
-use Moro\Indexer\Common\Strategy\CheckEntity\CheckEntityStrategy;
-use Moro\Indexer\Common\Strategy\CheckEntity\Decorator\SourceIgnoreDecorator;
-use Moro\Indexer\Common\Strategy\CheckEntityInterface;
-use Moro\Indexer\Common\Strategy\ReceiveIds\ReceiveIdsStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveIdsInterface;
-use Moro\Indexer\Common\Strategy\ReceiveView\ReceiveViewStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveViews\ReceiveViewsStrategy;
-use Moro\Indexer\Common\Strategy\ReceiveViewInterface;
-use Moro\Indexer\Common\Strategy\ReceiveViewsInterface;
-use Moro\Indexer\Common\Strategy\RemoveEntity\Decorator\EntityCacheStrategy as EntityCacheRemoveStrategy;
-use Moro\Indexer\Common\Strategy\RemoveEntity\RemoveEntityStrategy;
-use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\EntityCacheDecorator as EntityCacheUpdateStrategy;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\IndexRepeatDecorator;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\SourceRepeatDecorator;
-use Moro\Indexer\Common\Strategy\UpdateEntity\UpdateEntityStrategy;
-use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
-use Moro\Indexer\Common\Strategy\WaitingForAction\WaitingForActionStrategy;
-use Moro\Indexer\Common\Strategy\WaitingForActionInterface;
+use Moro\Indexer\Common\Action\CheckEntity\CheckEntityAction;
+use Moro\Indexer\Common\Action\CheckEntity\Decorator\SourceIgnoreDecorator;
+use Moro\Indexer\Common\Action\CheckEntityInterface;
+use Moro\Indexer\Common\Action\ReceiveIds\ReceiveIdsAction;
+use Moro\Indexer\Common\Action\ReceiveIdsInterface;
+use Moro\Indexer\Common\Action\ReceiveView\ReceiveViewAction;
+use Moro\Indexer\Common\Action\ReceiveViews\ReceiveViewsAction;
+use Moro\Indexer\Common\Action\ReceiveViewInterface;
+use Moro\Indexer\Common\Action\ReceiveViewsInterface;
+use Moro\Indexer\Common\Action\RemoveEntity\Decorator\EntityCacheDecorator as EntityCacheRemoveAction;
+use Moro\Indexer\Common\Action\RemoveEntity\RemoveEntityAction;
+use Moro\Indexer\Common\Action\RemoveEntityInterface;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\EntityCacheDecorator as EntityCacheUpdateAction;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\IndexRepeatDecorator;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\SourceRepeatDecorator;
+use Moro\Indexer\Common\Action\UpdateEntity\UpdateEntityAction;
+use Moro\Indexer\Common\Action\UpdateEntityInterface;
+use Moro\Indexer\Common\Action\WaitingForAction\WaitingForActionAction;
+use Moro\Indexer\Common\Action\WaitingForActionInterface;
 use Moro\Indexer\Common\Transaction\Manager\LazyManager as TransactionLazyManager;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManagerInterface;
 use Moro\Indexer\Common\View\KindInterface;
@@ -282,7 +282,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $definition = $container->register(UpdateEntityInterface::class,
             $config[Config::P_STRATEGY_UPDATE_ENTITY_CLASS]);
 
-        if ($definition->getClass() == UpdateEntityStrategy::class) {
+        if ($definition->getClass() == UpdateEntityAction::class) {
             $definition->addArgument(new Reference(SourceLazyManager::class));
             $definition->addArgument(new Reference(RegulationLazyManager::class));
             $definition->addArgument(new Reference(IndexLazyManager::class));
@@ -310,8 +310,8 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             ->addArgument(new Reference(DispatcherLazyManager::class));
 
         if ($config[Config::P_ENTITY_CACHE]) {
-            $renamedId = EntityCacheUpdateStrategy::class . '.inner';
-            $container->register(EntityCacheUpdateStrategy::class)
+            $renamedId = EntityCacheUpdateAction::class . '.inner';
+            $container->register(EntityCacheUpdateAction::class)
                 ->setDecoratedService(UpdateEntityInterface::class, $renamedId, 10)
                 ->addArgument(new Reference($renamedId));
         }
@@ -319,7 +319,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $definition = $container->register(RemoveEntityInterface::class,
             $config[Config::P_STRATEGY_REMOVE_ENTITY_CLASS]);
 
-        if ($definition->getClass() == RemoveEntityStrategy::class) {
+        if ($definition->getClass() == RemoveEntityAction::class) {
             $definition->addArgument(new Reference(IndexLazyManager::class));
             $definition->addArgument(new Reference(ViewLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
@@ -327,21 +327,21 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         }
 
         if ($config[Config::P_ENTITY_CACHE]) {
-            $renamedId = EntityCacheRemoveStrategy::class . '.inner';
-            $container->register(EntityCacheRemoveStrategy::class)
+            $renamedId = EntityCacheRemoveAction::class . '.inner';
+            $container->register(EntityCacheRemoveAction::class)
                 ->setDecoratedService(RemoveEntityInterface::class, $renamedId)
                 ->addArgument(new Reference($renamedId));
         }
 
         $definition = $container->register(ReceiveIdsInterface::class, $config[Config::P_STRATEGY_RECEIVE_IDS_CLASS]);
 
-        if ($definition->getClass() == ReceiveIdsStrategy::class) {
+        if ($definition->getClass() == ReceiveIdsAction::class) {
             $definition->addArgument(new Reference(IndexLazyManager::class));
         }
 
         $definition = $container->register(ReceiveViewInterface::class, $config[Config::P_STRATEGY_RECEIVE_VIEW_CLASS]);
 
-        if ($definition->getClass() == ReceiveViewStrategy::class) {
+        if ($definition->getClass() == ReceiveViewAction::class) {
             $definition->addArgument(new Reference(IndexLazyManager::class));
             $definition->addArgument(new Reference(ViewLazyManager::class));
         }
@@ -349,7 +349,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $definition = $container->register(ReceiveViewsInterface::class,
             $config[Config::P_STRATEGY_RECEIVE_VIEWS_CLASS]);
 
-        if ($definition->getClass() == ReceiveViewsStrategy::class) {
+        if ($definition->getClass() == ReceiveViewsAction::class) {
             $definition->addArgument(new Reference(IndexLazyManager::class));
             $definition->addArgument(new Reference(ViewLazyManager::class));
             $definition->addArgument(new Reference(TransactionLazyManager::class));
@@ -358,7 +358,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         $definition = $container->register(WaitingForActionInterface::class,
             $config[Config::P_STRATEGY_WAITING_ACTION_CLASS]);
 
-        if ($definition->getClass() == WaitingForActionStrategy::class) {
+        if ($definition->getClass() == WaitingForActionAction::class) {
             $definition->addArgument(new Reference(BusLazyManager::class));
             $definition->addArgument(new Reference(SourceLazyManager::class));
             $definition->addArgument(new Reference(SchedulerLazyManager::class));
@@ -368,7 +368,7 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
 
         $definition = $container->register(CheckEntityInterface::class, $config[Config::P_STRATEGY_CHECK_ENTITY_CLASS]);
 
-        if ($definition->getClass() == CheckEntityStrategy::class) {
+        if ($definition->getClass() == CheckEntityAction::class) {
             $definition->addArgument(new Reference(SourceLazyManager::class));
             $definition->addArgument(new Reference(IndexLazyManager::class));
             $definition->addArgument(new Reference(SchedulerLazyManager::class));

@@ -15,12 +15,12 @@ use Moro\Indexer\Common\Scheduler\Storage\DoctrineDBALStorage as SchedulerStorag
 use Moro\Indexer\Common\Scheduler\StorageInterface as SchedulerStorageInterface;
 use Moro\Indexer\Common\Source\Adapter\DoctrineDBALAdapter as SourceAdapter;
 use Moro\Indexer\Common\Source\AdapterInterface as SourceAdapterInterface;
-use Moro\Indexer\Common\Strategy\CheckEntity\Decorator\DoctrineIgnoreDecorator as CheckIgnoreDecorator;
-use Moro\Indexer\Common\Strategy\CheckEntityInterface;
-use Moro\Indexer\Common\Strategy\RemoveEntity\Decorator\DoctrineRepeatDecorator as RemoveRepeatDecorator;
-use Moro\Indexer\Common\Strategy\RemoveEntityInterface;
-use Moro\Indexer\Common\Strategy\UpdateEntity\Decorator\DoctrineRepeatDecorator as UpdateRepeatDecorator;
-use Moro\Indexer\Common\Strategy\UpdateEntityInterface;
+use Moro\Indexer\Common\Action\CheckEntity\Decorator\DoctrineIgnoreDecorator as CheckIgnoreDecorator;
+use Moro\Indexer\Common\Action\CheckEntityInterface;
+use Moro\Indexer\Common\Action\RemoveEntity\Decorator\DoctrineRepeatDecorator as RemoveRepeatDecorator;
+use Moro\Indexer\Common\Action\RemoveEntityInterface;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\DoctrineRepeatDecorator as UpdateRepeatDecorator;
+use Moro\Indexer\Common\Action\UpdateEntityInterface;
 use Moro\Indexer\Common\Transaction\Driver\DoctrineDBALDriver;
 use Moro\Indexer\Common\Transaction\Facade\DoctrineDBALFacade;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManagerInterface;
@@ -112,21 +112,21 @@ class DoctrineDBALProvider
         return new ViewStorage($facade);
     }
 
-    public function updateEntityStrategyDecorator(
+    public function updateEntityActionDecorator(
         UpdateEntityInterface $strategy,
         DispatcherLazyManager $events
     ): ?UpdateEntityInterface {
         return new UpdateRepeatDecorator($strategy, $events);
     }
 
-    public function removeEntityStrategyDecorator(
+    public function removeEntityActionDecorator(
         RemoveEntityInterface $strategy,
         DispatcherLazyManager $events
     ): ?RemoveEntityInterface {
         return new RemoveRepeatDecorator($strategy, $events);
     }
 
-    public function checkEntityStrategyDecorator(
+    public function checkEntityActionDecorator(
         CheckEntityInterface $strategy,
         DispatcherLazyManager $events
     ): ?CheckEntityInterface {
