@@ -93,11 +93,11 @@ class Configuration implements ConfigurationInterface
     /**
      * @param $object
      * @param array|null $context
-     * @return bool
+     * @return int
      */
-    public function apply($object, array $context = null): bool
+    public function apply($object, array $context = null): int
     {
-        return $this->_manager ? $this->_manager->apply($object, $context) : false;
+        return $this->_manager ? $this->_manager->apply($object, $context) : 0;
     }
 
     /**

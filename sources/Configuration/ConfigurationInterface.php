@@ -34,7 +34,7 @@ interface ConfigurationInterface
     /**
      * @param $object
      * @param array|null $context
-     * @return bool
+     * @return int
      */
-    function apply($object, array $context = null): bool;
+    function apply($object, array $context = null): int;
 }

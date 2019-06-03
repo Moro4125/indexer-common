@@ -29,7 +29,7 @@ interface ManagerInterface
     /**
      * @param $object
      * @param null|array $context
-     * @return bool
+     * @return int
      */
-    function apply($object, array $context = null): bool;
+    function apply($object, array $context = null): int;
 }

@@ -59,9 +59,9 @@ class ConfigurationManager implements ManagerInterface
     /**
      * @param $object
      * @param null|array $context
-     * @return bool
+     * @return int
      */
-    public function apply($object, array $context = null): bool
+    public function apply($object, array $context = null): int
     {
         assert($this->_adapter);
 
@@ -71,34 +71,41 @@ class ConfigurationManager implements ManagerInterface
         $this->_configuration->setContext($context);
         $this->_configuration->setManager($this);
 
-        $flag = false;
+        $flag = 0;
         $used = [];
 
         try {
+            $list = [];
+
             while ($object) {
                 $reflection = new ReflectionObject($object);
 
                 foreach ($reflection->getInterfaceNames() as $interface) {
-                    if (empty($used[$interface]) && $configurator = $this->_configurators[$interface] ?? null) {
+                    if (empty($used[$interface])) {
                         $used[$interface] = true;
-                        $configurator->apply($this->_configuration, $object);
-                        $flag = true;
+                        array_push($list, [$interface, $object]);
                     }
                 }
 
                 while ($reflection) {
                     $class = $reflection->getName();
 
-                    if (empty($used[$class]) && $configurator = $this->_configurators[$class] ?? null) {
+                    if (empty($used[$class])) {
                         $used[$class] = true;
-                        $configurator->apply($this->_configuration, $object);
-                        $flag = true;
+                        array_unshift($list, [$class, $object]);
                     }
 
                     $reflection = $reflection->getParentClass();
                 }
 
                 $object = ($object instanceof DecoratorInterface) ? $object->getDecoratedInstance() : null;
+            }
+
+            foreach ($list as list($classOrInterface, $instance)) {
+                if ($configurator = $this->_configurators[$classOrInterface] ?? null) {
+                    $configurator->apply($this->_configuration, $instance);
+                    $flag++;
+                }
             }
         }
         finally {
