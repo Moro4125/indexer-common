@@ -6,7 +6,6 @@ namespace {
 	}
 
 	require_once __DIR__ . '/vendor/autoload.php';
-	require_once __DIR__ . '/vendor/infection/infection/app/bootstrap.php';
 }
 namespace Infection\Finder {
 
@@ -133,6 +132,7 @@ namespace {
 
 	$input = new ArgvInput(prepareArgv());
 
+    $container = new \Infection\Console\InfectionContainer();
 	$application = new Application($container ?? null);
     /** @noinspection PhpUnhandledExceptionInspection */
     $application->run($input);

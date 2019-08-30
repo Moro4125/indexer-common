@@ -21,5 +21,17 @@
   "phpUnit": {
     "configDir": ".",
     "customPath": "vendor\/phpunit\/phpunit\/phpunit"
-  }
+  },
+  "mutators": {
+          "@default": true,
+          "@function_signature": false,
+          "TrueValue": {
+              "ignore": [
+                  "NameSpace\\*\\Class::method"
+              ]
+          }
+  },
+  "testFramework":"phpunit",
+  "initialTestsPhpOptions": "-d zend_extension=xdebug.so",
+  "testFrameworkOptions": "-vvv"
 }
