@@ -12,7 +12,6 @@ use Moro\Indexer\Common\Bus\AdapterInterface as BusAdapterInterface;
 use Moro\Indexer\Common\Bus\Manager\BusManager;
 use Moro\Indexer\Common\Bus\Manager\LazyManager as BusLazyManager;
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManagerInterface;
-use Moro\Indexer\Common\ClientFacade;
 use Moro\Indexer\Common\Dispatcher\Manager\EventManager;
 use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherManagerInterface;
@@ -22,7 +21,6 @@ use Moro\Indexer\Common\Index\Manager\IndexManager;
 use Moro\Indexer\Common\Index\Manager\LazyManager as IndexLazyManager;
 use Moro\Indexer\Common\Index\ManagerInterface as IndexManagerInterface;
 use Moro\Indexer\Common\Index\StorageInterface as IndexStorageInterface;
-use Moro\Indexer\Common\MonolithFacade;
 use Moro\Indexer\Common\Regulation\Factory\ContainerFactory as RegulationFactory;
 use Moro\Indexer\Common\Regulation\FactoryInterface as RegulationFactoryInterface;
 use Moro\Indexer\Common\Regulation\InstructionInterface;
@@ -40,6 +38,7 @@ use Moro\Indexer\Common\Scheduler\Manager\LazyManager as SchedulerLazyManager;
 use Moro\Indexer\Common\Scheduler\Manager\SchedulerManager;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManagerInterface;
 use Moro\Indexer\Common\Scheduler\StorageInterface as SchedulerStorageInterface;
+use Moro\Indexer\Common\ServiceFacade;
 use Moro\Indexer\Common\Source\AdapterInterface;
 use Moro\Indexer\Common\Source\Entity\UniversalEntity;
 use Moro\Indexer\Common\Source\Factory\ContainerFactory as SourceFactory;
@@ -70,6 +69,12 @@ use Moro\Indexer\Common\Action\UpdateEntity\UpdateEntityAction;
 use Moro\Indexer\Common\Action\UpdateEntityInterface;
 use Moro\Indexer\Common\Action\WaitingForAction\WaitingForActionAction;
 use Moro\Indexer\Common\Action\WaitingForActionInterface;
+use Moro\Indexer\Common\Strategy\Read\ExternalReadStrategy;
+use Moro\Indexer\Common\Strategy\Read\InternalReadStrategy;
+use Moro\Indexer\Common\Strategy\ReadStrategyInterface;
+use Moro\Indexer\Common\Strategy\Write\ExternalWriteStrategy;
+use Moro\Indexer\Common\Strategy\Write\InternalWriteStrategy;
+use Moro\Indexer\Common\Strategy\WriteStrategyInterface;
 use Moro\Indexer\Common\Transaction\Manager\LazyManager as TransactionLazyManager;
 use Moro\Indexer\Common\Transaction\Manager\TransactionManager;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManagerInterface;
@@ -823,21 +828,54 @@ class CommonProvider
         return new CheckEntityAction($source, $index, $scheduler, $events, $transaction, $factory);
     }
 
-    public function monolithFacade(
+    public function serviceFacade(
+        InternalReadStrategy $reader,
+        InternalWriteStrategy $writer
+    ): ServiceFacade {
+        return new ServiceFacade($reader, $writer);
+    }
+
+    public function internalReadStrategy(
+        Container $container,
+        Parameters $parameters,
+        ReceiveIdsInterface $ids,
+        ReceiveViewInterface $view,
+        ReceiveViewsInterface $views
+    ): InternalReadStrategy {
+        $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
+
+        return new InternalReadStrategy($ids, $view, $views, $logger);
+    }
+
+    public function internalWriteStrategy(
         Container $container,
         Parameters $parameters,
         UpdateEntityInterface $update,
-        RemoveEntityInterface $remove,
-        ReceiveIdsInterface $ids,
-        ReceiveViewInterface $view,
-        ReceiveViewsInterface $views,
-        WaitingForActionInterface $waiting,
-        CheckEntityInterface $check,
-        DispatcherLazyManager $events
-    ): MonolithFacade {
+        RemoveEntityInterface $remove
+    ): InternalWriteStrategy {
         $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
 
-        return new MonolithFacade($update, $remove, $ids, $view, $views, $waiting, $check, $events, $logger);
+        return new InternalWriteStrategy($update, $remove, $logger);
+    }
+
+    public function externalReadStrategy(
+        Container $container,
+        Parameters $parameters,
+        BusLazyManager $bus
+    ): ExternalReadStrategy {
+        $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
+
+        return new ExternalReadStrategy($bus, $logger);
+    }
+
+    public function externalWriteStrategy(
+        Container $container,
+        Parameters $parameters,
+        BusLazyManager $bus
+    ): ExternalWriteStrategy {
+        $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
+
+        return new ExternalWriteStrategy($bus, $logger);
     }
 
     public function backendFacade(
@@ -857,12 +895,5 @@ class CommonProvider
 
         return new BackendFacade($update, $remove, $ids, $view, $views, $waiting, $check, $events, $bus,
             $logger);
-    }
-
-    public function clientFacade(Container $container, Parameters $parameters, BusLazyManager $bus): ClientFacade
-    {
-        $logger = ($parameters->get(self::P_DEBUG) && $container->has(LoggerInterface::class)) ? $container->get(LoggerInterface::class) : null;
-
-        return new ClientFacade($bus, $logger);
     }
 }

@@ -2,19 +2,19 @@
 
 use Moro\Container7\Container;
 use Moro\Container7\Parameters;
+use Moro\Indexer\Common\Action\UpdateEntity\Decorator\SourceRepeatDecorator;
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManager;
 use Moro\Indexer\Common\Dispatcher\Event\ExceptionRepairedEvent;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as EventManager;
 use Moro\Indexer\Common\Integration\Container7\CommonProvider;
 use Moro\Indexer\Common\Integration\Container7\ConfigurationProvider;
 use Moro\Indexer\Common\Integration\Container7\DoctrineDBALProvider;
-use Moro\Indexer\Common\MonolithFacade;
 use Moro\Indexer\Common\Scheduler\EntryInterface;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManagerInterface;
+use Moro\Indexer\Common\ServiceFacade;
 use Moro\Indexer\Common\Source\Exception\AdapterFailedException as SourceAdapterFailedException;
 use Moro\Indexer\Common\Source\Exception\NotFoundException;
 use Moro\Indexer\Common\Source\Exception\WrongStructureException;
-use Moro\Indexer\Common\Action\UpdateEntity\Decorator\SourceRepeatDecorator;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManager;
 use Moro\Indexer\Test\Container7\ConfigurationTestProvider;
 use Moro\Indexer\Test\Container7\DoctrineDBALTestProvider;
@@ -47,9 +47,9 @@ class IntegrationTest extends \PHPUnit\Framework\TestCase
             $container->addProvider(CommonProvider::class);
             $container->addProvider(MemoryTestProvider::class);
 
-            /** @var MonolithFacade $facade */
-            $facade = $container->get(MonolithFacade::class);
-            verify($facade)->isInstanceOf(MonolithFacade::class);
+            /** @var ServiceFacade $facade */
+            $facade = $container->get(ServiceFacade::class);
+            verify($facade)->isInstanceOf(ServiceFacade::class);
 
             $this->_testFacade($facade);
         });
@@ -65,9 +65,9 @@ class IntegrationTest extends \PHPUnit\Framework\TestCase
             $container->addProvider(CommonProvider::class);
             $container->addProvider(MemoryTestProvider::class);
 
-            /** @var MonolithFacade $facade */
-            $facade = $container->get(MonolithFacade::class);
-            verify($facade)->isInstanceOf(MonolithFacade::class);
+            /** @var ServiceFacade $facade */
+            $facade = $container->get(ServiceFacade::class);
+            verify($facade)->isInstanceOf(ServiceFacade::class);
 
             /** @var SchedulerManagerInterface $scheduler */
             $scheduler = $container->get(SchedulerManagerInterface::class);
@@ -109,9 +109,9 @@ class IntegrationTest extends \PHPUnit\Framework\TestCase
         $container->addProvider(DoctrineDBALProvider::class);
         $container->addProvider(DoctrineDBALTestProvider::class);
 
-        /** @var MonolithFacade $facade */
-        $facade = $container->get(MonolithFacade::class);
-        verify($facade)->isInstanceOf(MonolithFacade::class);
+        /** @var ServiceFacade $facade */
+        $facade = $container->get(ServiceFacade::class);
+        verify($facade)->isInstanceOf(ServiceFacade::class);
 
         $this->_testFacade($facade);
 
@@ -144,14 +144,14 @@ class IntegrationTest extends \PHPUnit\Framework\TestCase
         $container->addProvider(ConfigurationProvider::class);
         $container->addProvider(ConfigurationTestProvider::class);
 
-        /** @var MonolithFacade $facade */
-        $facade = $container->get(MonolithFacade::class);
-        verify($facade)->isInstanceOf(MonolithFacade::class);
+        /** @var ServiceFacade $facade */
+        $facade = $container->get(ServiceFacade::class);
+        verify($facade)->isInstanceOf(ServiceFacade::class);
 
         $this->_testFacade($facade);
     }
 
-    protected function _testFacade(MonolithFacade $facade)
+    protected function _testFacade(ServiceFacade $facade)
     {
         $this->specify('Update all entities.', function () use ($facade) {
             /** @noinspection PhpUnhandledExceptionInspection */

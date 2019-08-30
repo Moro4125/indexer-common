@@ -385,7 +385,7 @@ trait ArraysGetByPathTrait
 
         switch ($name) {
             case 'count':
-                return [$results ? count($results) : 0];
+                return [$results ? ((is_array($results) || $results instanceof \Countable) ? count($results) : 1) : 0];
             case 'first':
                 return $results ? [reset($results)] : [];
             case 'last':

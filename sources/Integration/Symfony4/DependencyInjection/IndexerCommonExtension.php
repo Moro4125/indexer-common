@@ -6,7 +6,6 @@ use Moro\Indexer\Common\BackendFacade;
 use Moro\Indexer\Common\Bus\AdapterInterface as BusAdapterInterface;
 use Moro\Indexer\Common\Bus\Manager\LazyManager as BusLazyManager;
 use Moro\Indexer\Common\Bus\ManagerInterface as BusManagerInterface;
-use Moro\Indexer\Common\ClientFacade;
 use Moro\Indexer\Common\Dispatcher\Manager\LazyManager as DispatcherLazyManager;
 use Moro\Indexer\Common\Dispatcher\ManagerInterface as DispatcherManagerInterface;
 use Moro\Indexer\Common\Dispatcher\Middleware\SchedulerMiddleware;
@@ -16,7 +15,6 @@ use Moro\Indexer\Common\Index\ManagerInterface as IndexManagerInterface;
 use Moro\Indexer\Common\Index\Storage\Decorator\AliasCacheDecorator as IndexStorageCacheDecorator;
 use Moro\Indexer\Common\Index\StorageInterface as IndexStorageInterface;
 use Moro\Indexer\Common\Integration\Symfony4\DependencyInjection\IndexerCommonConfiguration as Config;
-use Moro\Indexer\Common\MonolithFacade;
 use Moro\Indexer\Common\Regulation\Factory\ContainerFactory as RegulationFactory;
 use Moro\Indexer\Common\Regulation\FactoryInterface as RegulationFactoryInterface;
 use Moro\Indexer\Common\Regulation\InstructionInterface;
@@ -30,6 +28,7 @@ use Moro\Indexer\Common\Scheduler\FactoryInterface as SchedulerFactoryInterface;
 use Moro\Indexer\Common\Scheduler\Manager\LazyManager as SchedulerLazyManager;
 use Moro\Indexer\Common\Scheduler\ManagerInterface as SchedulerManagerInterface;
 use Moro\Indexer\Common\Scheduler\StorageInterface as SchedulerStorageInterface;
+use Moro\Indexer\Common\ServiceFacade;
 use Moro\Indexer\Common\Source\Adapter\Debug\HttpApiDebugAdapter;
 use Moro\Indexer\Common\Source\Adapter\HttpApiAdapter;
 use Moro\Indexer\Common\Source\AdapterInterface as SourceAdapterInterface;
@@ -61,6 +60,10 @@ use Moro\Indexer\Common\Action\UpdateEntity\UpdateEntityAction;
 use Moro\Indexer\Common\Action\UpdateEntityInterface;
 use Moro\Indexer\Common\Action\WaitingForAction\WaitingForActionAction;
 use Moro\Indexer\Common\Action\WaitingForActionInterface;
+use Moro\Indexer\Common\Strategy\Read\ExternalReadStrategy;
+use Moro\Indexer\Common\Strategy\Read\InternalReadStrategy;
+use Moro\Indexer\Common\Strategy\Write\ExternalWriteStrategy;
+use Moro\Indexer\Common\Strategy\Write\InternalWriteStrategy;
 use Moro\Indexer\Common\Transaction\Manager\LazyManager as TransactionLazyManager;
 use Moro\Indexer\Common\Transaction\ManagerInterface as TransactionManagerInterface;
 use Moro\Indexer\Common\View\KindInterface;
@@ -388,16 +391,6 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
 
         // Facades.
 
-        $container->register(MonolithFacade::class, MonolithFacade::class)
-            ->addArgument(new Reference(UpdateEntityInterface::class))
-            ->addArgument(new Reference(RemoveEntityInterface::class))
-            ->addArgument(new Reference(ReceiveIdsInterface::class))
-            ->addArgument(new Reference(ReceiveViewInterface::class))
-            ->addArgument(new Reference(ReceiveViewsInterface::class))
-            ->addArgument(new Reference(WaitingForActionInterface::class))
-            ->addArgument(new Reference(CheckEntityInterface::class))
-            ->addArgument(new Reference(DispatcherLazyManager::class));
-
         $container->register(BackendFacade::class, BackendFacade::class)
             ->addArgument(new Reference(UpdateEntityInterface::class))
             ->addArgument(new Reference(RemoveEntityInterface::class))
@@ -409,7 +402,25 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
             ->addArgument(new Reference(DispatcherLazyManager::class))
             ->addArgument(new Reference(BusLazyManager::class));
 
-        $container->register(ClientFacade::class, ClientFacade::class)
+        $container->register(ServiceFacade::class, ServiceFacade::class)
+            ->addArgument(new Reference(InternalReadStrategy::class))
+            ->addArgument(new Reference(InternalWriteStrategy::class));
+
+        // Strategies.
+
+        $container->register(InternalReadStrategy::class, InternalReadStrategy::class)
+            ->addArgument(new Reference(ReceiveIdsInterface::class))
+            ->addArgument(new Reference(ReceiveViewInterface::class))
+            ->addArgument(new Reference(ReceiveViewsInterface::class));
+
+        $container->register(InternalWriteStrategy::class, InternalWriteStrategy::class)
+            ->addArgument(new Reference(UpdateEntityInterface::class))
+            ->addArgument(new Reference(RemoveEntityInterface::class));
+
+        $container->register(ExternalReadStrategy::class, ExternalReadStrategy::class)
+            ->addArgument(new Reference(BusLazyManager::class));
+
+        $container->register(ExternalWriteStrategy::class, ExternalWriteStrategy::class)
             ->addArgument(new Reference(BusLazyManager::class));
     }
 
@@ -510,14 +521,18 @@ class IndexerCommonExtension extends Extension implements CompilerPassInterface,
         // Logger.
 
         if ($container->has('monolog.logger')) {
-            $definition = $container->getDefinition(MonolithFacade::class);
-            $definition->addArgument(new Reference('monolog.logger.indexer'));
+            $list = [
+                BackendFacade::class,
+                InternalReadStrategy::class,
+                InternalWriteStrategy::class,
+                ExternalReadStrategy::class,
+                ExternalWriteStrategy::class,
+            ];
 
-            $definition = $container->getDefinition(BackendFacade::class);
-            $definition->addArgument(new Reference('monolog.logger.indexer'));
-
-            $definition = $container->getDefinition(ClientFacade::class);
-            $definition->addArgument(new Reference('monolog.logger.indexer'));
+            foreach ($list as $id) {
+                $definition = $container->getDefinition($id);
+                $definition->addArgument(new Reference('monolog.logger.indexer'));
+            }
 
             foreach ($container->findTaggedServiceIds(SourceAdapterInterface::class) as $id => $tags) {
                 $definition = $container->getDefinition($id);
