@@ -1,6 +1,6 @@
 {
   "name": "moro/indexer-common",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A library that provides common classes for entities indexer",
   "type": "library",
   "license": "MIT",
